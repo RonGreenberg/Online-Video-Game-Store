@@ -1,0 +1,188 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+    background-image: url('../assets/images/default_coursesummary.jpg');
+    background-size: cover;
+    grid-column: 1 / span 2; /* starts from the first column and spans two columns (the whole width of the grid) */
+    grid-row: 1 / span 1; /* spans only the first row of the grid (there are 3 rows) */
+}
+
+footer {
+    background: #f2f2f2;
+    grid-column: 1 / span 2;
+    grid-row: 3 / span 1;
+    color: rgba(0, 0, 0, 0.3);
+    text-align: center;
+    padding-top: 12px;
+    /* Properties related to multiple-columns layout: */
+    column-count: 4;
+    column-rule: 2px solid lightgray;
+}
+
+/* This is a rule that declares a custom font family based on a font file, which we can use later. */
+@font-face {
+    font-family: myFontFamily;
+    src: url('../assets/fonts/BebasNeue-Regular.ttf'); /* this file will be transferred to the client's browser when loading the page */
+}
+
+/*------------SIDEBAR------------*/
+.sidebar {
+    background: #f2f2f2;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    padding: 10px 0px 10px; /* top, right&left, bottom */
+}
+
+.sidebar h2 {
+    padding-left: 15px;
+    font-family: myFontFamily;
+    font-weight: bold;
+    font-size: 25pt;
+    text-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+    letter-spacing: 2px;
+}
+
+.sidebar ul {
+    padding: 0px; /* applies to all four sides */
+}
+
+.sidebar ul li {
+    list-style: none; /* to remove bullets */
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+    border-radius: 10px; /* results in rounded corners */
+    transition: 0.4s; /* results in a fading animation when hovering over sidebar options or selecting one */
+}
+
+.sidebar ul li a {
+    color: black;
+    text-decoration: none; /* to remove underlines from links (anchor tags) */
+    display: block; /* to make entire space clickable, not just the text */
+    padding: 15px;
+}
+
+.sidebar ul li a .fa {
+    width: 30px; /* to distance the icons from the text */
+}
+
+/* changing background color of sidebar buttons that are not currently selected (active), when hovering on them */
+.sidebar ul li:hover:not(.active) {
+    background-color: lightgray;
+}
+
+/* making the text bold when hovering on it */
+.sidebar ul li:hover a {
+    font-weight: bold;
+}
+
+/* This class will be applied to one li element at a time from the sidebar - the one that is currently selected. */
+.active {
+    background-color:lightskyblue;
+}
+
+
+/*------------MAIN PAGE------------*/
+section {
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+    overflow-y: auto; /* in the case of overflow, use a vertical scrollbar only for the page frame itself (keeps the footer in place) */
+    overflow-x: hidden; /* we don't need a horizontal scrollbar */
+}
+
+.page > * { /* all direct children of page */
+    font-weight: normal;
+    padding-left: 20px;
+}
+
+table {
+    margin: 30px;
+}
+
+/* class for overlay of the popup displayed when clicking Add New */
+.popup-overlay {
+    display: none; /* hidden by default */
+    position: fixed; /* stay in place */
+    z-index: 1; /* sit on top of the rest of the page */
+    padding-top: 100px;
+    /* the overlay covers the entire page, and its background color is black with some opacity so that we could see the original page through it. */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+/* class for the popup itself */
+.popup-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 30px;
+    width: 20%;
+}
+
+input[type=text] {
+    display: block; /* in order to have each input field and labels on separate lines */
+}
+
+
+/*------------BUTTONS------------*/
+button {
+    background-color: rgb(51, 122, 183);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    margin: 20px 30px 0;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* change button color on hover */
+button:hover {
+    background-color: rgb(40, 96, 144);
+}
+
+.btn-cancel {
+    background-color: gray; /* overriding */
+}
+
+.btn-cancel:hover {
+    background-color: silver;
+}
+
+/* class used by both Edit and Delete buttons */
+.btn-action {
+    margin: 5px;
+}
+
+.btn-delete {
+    background-color:rgb(216, 0, 43);
+}
+
+
+.container {
+    display: grid; /* aligning elements within the container using CSS grid */
+    grid-template-columns: 1fr 5fr; /* the first column takes up 1/6 (fraction) of the window width, the second takes up 5/6 */
+    grid-template-rows: 5vh 90vh 5vh; /* first row takes 5% of the whole height, second one takes 90% and third one takes 5% */
+}
+
+/* .label {
+    border: 1px solid white;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+    text-align: center;
+    color: rgba(0, 0, 0, 0.3);
+} */
