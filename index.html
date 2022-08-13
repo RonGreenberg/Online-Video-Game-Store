@@ -41,29 +41,30 @@
             <div class="page" id="games" style="display: none;">
                 <!-- <h1>Games</h1> -->
                 <button class="btn-add-new">Add New</button>
+                <button class="btn-search">Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
                             <label for="gameID">gameID</label>
-                            <input type="text" name="gameID" id="gameID" required />
+                            <input type="text" name="gameID" id="gameID" />
                             <label for="gameName">Name</label>
-                            <input type="text" name="gameName" id="gameName" required />
+                            <input type="text" name="gameName" id="gameName" />
                             <label for="description">description</label>
-                            <input type="text" name="description" id="description" required />
+                            <input type="text" name="description" id="description" />
                             <label for="unitPrice">unitPrice</label>
-                            <input type="text" name="unitPrice" id="unitPrice" required />
+                            <input type="text" name="unitPrice" id="unitPrice" />
                             <label for="developer">developer</label>
-                            <input type="text" name="developer" id="developer" required />
+                            <input type="text" name="developer" id="developer" />
                             <label for="version">version</label>
-                            <input type="text" name="version" id="version" required />
+                            <input type="text" name="version" id="version" />
                             <label for="releaseDate">releaseDate</label>
-                            <input type="text" name="releaseDate" id="releaseDate" required />
+                            <input type="text" name="releaseDate" id="releaseDate" />
                             <label for="genre">genre</label>
-                            <input type="text" name="genre" id="genre" required />
+                            <input type="text" name="genre" id="genre" />
                             <label for="platform">platform</label>
-                            <input type="text" name="platform" id="platform" required />
+                            <input type="text" name="platform" id="platform" />
                             <label for="licenseType">licenseType</label>
-                            <input type="text" name="licenseType" id="licenseType" required />
+                            <input type="text" name="licenseType" id="licenseType" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -90,17 +91,18 @@
 
             <div class="page" id="customers" style="display: none;">
                 <button class="btn-add-new">Add New</button>
+                <button class="btn-search">Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
                             <label for="customerID">ID</label>
-                            <input type="text" name="customerID" id="customerID" required />
+                            <input type="text" name="customerID" id="customerID" />
                             <label for="customerName">Name</label>
-                            <input type="text" name="customerName" id="customerName" required />
+                            <input type="text" name="customerName" id="customerName" />
                             <label for="address">Address</label>
-                            <input type="text" name="address" id="address" required />
+                            <input type="text" name="address" id="address" />
                             <label for="email">Email</label>
-                            <input type="text" name="email" id="email" required />
+                            <input type="text" name="email" id="email" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -156,6 +158,15 @@
         // event handler for clicking Add New buttons (Add New buttons in all pages should use this class)
         $('.btn-add-new').click(function() {
             var popup = $(this).closest('.page').find('.popup-overlay'); // finding the popup overlay from the same page where the button was clicked
+            $(popup.find('button')[1]).html("Add"); // change the name of the button
+            popup.css('display', 'block'); // displaying the popup
+            popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
+        });
+
+        // event handler for clicking Search buttons (Search buttons in all pages should use this class)
+        $('.btn-search').click(function() {
+            var popup = $(this).closest('.page').find('.popup-overlay'); // finding the popup overlay from the same page where the button was clicked
+            $(popup.find('button')[1]).html("Search"); // change the name of the button
             popup.css('display', 'block'); // displaying the popup
             popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
         });
@@ -181,6 +192,7 @@
 
             // when submitting the form, we also need to send the id of the object to update. So we store it as an attribute of the form just like we did inside the Edit button.
             popup.find('form')[0].setAttribute('data-id', $(this).attr('data-id'));
+            $(popup.find('button')[1]).html("Edit"); // change the name of the button
             popup.css('display', 'block'); // displaying the popup
         });
 
@@ -206,20 +218,62 @@
             var page = $(this).closest('.page'); 
             var collection = page.attr('id');
 
-            var route;
-            if ($(this).attr("data-id")) { // if the form contains a data-id attribute, it means we got here as a result of editing
-                route = 'update?collection=' + collection + "&id=" + $(this).attr("data-id");
-            } else { // else, we want to add a new record
-                route = 'create?collection=' + collection;
+            var textFields = $(this).find('input'); // get all input elements
+
+            var allEmpty = true; // check if all inputs are empty
+            var allFilled = true;
+            for(var i = 0; i < textFields.length; i++)
+            {
+                if(textFields.eq(i).val() != "")
+                {
+                    allEmpty = false;
+                } else
+                    allFilled = false;
+            }
+            if(allEmpty) // if all inputs are empty, refill the table
+            {
+                readAndFillTable(page, collection);
             }
             
-            // sending an HTTP POST request to the appropriate route in the server
-            $.post(route, $(this).serialize(), function(data) {
-                // if the request is successful, we hide the popup and refresh the table
-                page.find('.popup-overlay').css('display', 'none');
-                readAndFillTable(page, collection);
-            });
 
+            if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
+            {
+                var table = $(this).closest('.page').find('table'); // gets the table
+                for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
+                {
+                    var row = $(table).find('tr')[i];
+                    for(var j = 0; j < $(row).find('td').length-1; j++) // run on the columns
+                    {
+                        if(textFields.eq(j).val() != "" && textFields.eq(j).val() != $(row).find('td')[j].innerHTML) // remove the row if the input is not empty and not equal to the value in the table
+                        {
+                            row.remove();
+                            i--;
+                            break;
+                        }
+                    }
+                }
+            }else{ // if its not search popup(it might be create popup or edit popup)
+                
+                if(!allFilled) // if not all inputs are filled, give alert, then return
+                {
+                    alert("Not all fields are filled.");
+                    return;
+                }
+                var route;
+                if ($(this).attr("data-id")) { // if the form contains a data-id attribute, it means we got here as a result of editing
+                    route = 'update?collection=' + collection + "&id=" + $(this).attr("data-id");
+                } else { // else, we want to add a new record
+                    route = 'create?collection=' + collection;
+                }
+                
+                // sending an HTTP POST request to the appropriate route in the server
+                $.post(route, $(this).serialize(), function(data) {
+                    // if the request is successful, we hide the popup and refresh the table
+                    page.find('.popup-overlay').css('display', 'none');
+                    readAndFillTable(page, collection);
+                });
+            }
+            page.find('.popup-overlay').css('display', 'none');
             $(this).removeAttr("data-id"); // removing the data-id attribute, as the operation is finished
         });
     </script>
