@@ -36,6 +36,9 @@ function selectPage(hashKey) {
         case "#customers":
             renderCustomers();
             break;
+        case "#games":
+            renderGames();
+            break;
     }
 }
 
@@ -47,6 +50,10 @@ function renderAbout() {
 function renderCustomers() {
     // filling the page with the contents of the customers collection
     readAndFillTable($("#customers"), "customers");
+}
+function renderGames() {
+    // filling the page with the contents of the games collection
+    readAndFillTable($("#games"), "games");
 }
 
 // providing optional parameters indicating whether to include edit/delete buttons in the generated table
