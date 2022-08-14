@@ -101,6 +101,7 @@ section {
 
 table {
     margin: 30px;
+    font-size: 12pt;
 }
 
 /* class for overlay of the popup displayed when clicking Add New */
@@ -141,7 +142,7 @@ button {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
+    font-size: 11pt;
     cursor: pointer;
     border-radius: 5px;
 }
@@ -168,10 +169,14 @@ button:hover {
     background-color:rgb(216, 0, 43);
 }
 
+.btn-delete:hover {
+    background-color: firebrick;
+}
+
 
 .container {
     display: grid; /* aligning elements within the container using CSS grid */
-    grid-template-columns: 1fr 5fr; /* the first column takes up 1/6 (fraction) of the window width, the second takes up 5/6 */
+    grid-template-columns: 1fr 6fr; /* the first column takes up 1/7 (fraction) of the window width, the second takes up 6/7 */
     grid-template-rows: 5vh 90vh 5vh; /* first row takes 5% of the whole height, second one takes 90% and third one takes 5% */
 }
 

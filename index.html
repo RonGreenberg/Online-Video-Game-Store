@@ -39,31 +39,30 @@
             <div class="page" id="dashboard" style="display: none;"><h1>Dashboard</h1></div>
 
             <div class="page" id="games" style="display: none;">
-                <!-- <h1>Games</h1> -->
                 <button class="btn-add-new">Add New</button>
                 <button class="btn-search">Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
-                            <label for="gameID">gameID</label>
+                            <label for="gameID">ID</label>
                             <input type="text" name="gameID" id="gameID" />
                             <label for="gameName">Name</label>
                             <input type="text" name="gameName" id="gameName" />
-                            <label for="description">description</label>
+                            <label for="description">Description</label>
                             <input type="text" name="description" id="description" />
-                            <label for="unitPrice">unitPrice</label>
+                            <label for="unitPrice">Unit Price</label>
                             <input type="text" name="unitPrice" id="unitPrice" />
-                            <label for="developer">developer</label>
+                            <label for="developer">Developer</label>
                             <input type="text" name="developer" id="developer" />
-                            <label for="version">version</label>
+                            <label for="version">Version</label>
                             <input type="text" name="version" id="version" />
-                            <label for="releaseDate">releaseDate</label>
+                            <label for="releaseDate">Release Date</label>
                             <input type="text" name="releaseDate" id="releaseDate" />
-                            <label for="genre">genre</label>
+                            <label for="genre">Genre</label>
                             <input type="text" name="genre" id="genre" />
-                            <label for="platform">platform</label>
+                            <label for="platform">Platform</label>
                             <input type="text" name="platform" id="platform" />
-                            <label for="licenseType">licenseType</label>
+                            <label for="licenseType">License Type</label>
                             <input type="text" name="licenseType" id="licenseType" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
@@ -73,16 +72,17 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>gameID</th>
-                            <th>gameName</th>
-                            <th>description</th>
-                            <th>unitPrice</th>
-                            <th>developer</th>
-                            <th>version</th>
-                            <th>releaseDate</th>
-                            <th>genre</th>
-                            <th>platform</th>
-                            <th>licenseType</th>
+                            <th>Image</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Unit Price</th>
+                            <th>Developer</th>
+                            <th>Version</th>
+                            <th>Release Date</th>
+                            <th>Genre</th>
+                            <th>Platform</th>
+                            <th>License Type</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -234,7 +234,7 @@
             {
                 readAndFillTable(page, collection);
             }
-            
+
 
             if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
             {
@@ -242,9 +242,15 @@
                 for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
                 {
                     var row = $(table).find('tr')[i];
-                    for(var j = 0; j < $(row).find('td').length-1; j++) // run on the columns
+
+                    for(var j = 0, colIndex = 0; j < $(row).find('td').length-1 && colIndex < $(row).find('td').length-1; j++, colIndex++) // run on the columns
                     {
-                        if(textFields.eq(j).val() != "" && textFields.eq(j).val() != $(row).find('td')[j].innerHTML) // remove the row if the input is not empty and not equal to the value in the table
+                        // temporary fix - do not check image field
+                        if ($(row).find('td').eq(colIndex).find("img").length > 0) {
+                            colIndex++;
+                        }
+
+                        if(textFields.eq(j).val() != "" && textFields.eq(j).val() != $(row).find('td')[colIndex].innerHTML) // remove the row if the input is not empty and not equal to the value in the table
                         {
                             row.remove();
                             i--;
