@@ -91,7 +91,7 @@ section {
     grid-column: 2 / span 1;
     grid-row: 2 / span 1;
     overflow-y: auto; /* in the case of overflow, use a vertical scrollbar only for the page frame itself (keeps the footer in place) */
-    overflow-x: hidden; /* we don't need a horizontal scrollbar */
+    overflow-x: auto;
 }
 
 .page > * { /* all direct children of page */

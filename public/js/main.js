@@ -28,6 +28,10 @@ function selectPage(hashKey) {
         }
     }
 
+    renderPage(hashKey);
+}
+
+function renderPage(hashKey) {
     // calling the appropriate rendering function for the page itself
     switch (hashKey) {
         case "#about":
@@ -44,6 +48,7 @@ function selectPage(hashKey) {
             break;
     }
 }
+
 function readAndFillOrderGames(){
     var html = '';
     html += '<tr><td colspan="5"><h4>Games: </h4>';
