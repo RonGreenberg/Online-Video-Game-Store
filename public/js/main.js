@@ -44,22 +44,10 @@ function selectPage(hashKey) {
             break;
     }
 }
-function renderOrders(){
-    $('.table-expandable').each(function () {
-        var table = $(this);
-        table.children('thead').children('tr').append('<th></th>');
-        table.children('tbody').children('tr').filter(':odd').hide();
-        table.children('tbody').children('tr').filter(':even').click(function () {
-            var element = $(this);
-            element.next('tr').toggle('fast');
-            element.find(".table-expandable-arrow").toggleClass("up");
-        });
-        table.children('tbody').children('tr').filter(':even').each(function () {
-            var element = $(this);
-            element.append('<td><div class="table-expandable-arrow"></div></td>');
-        });
-    });
-
+function readAndFillOrderGames(){
+    var html = '';
+    html += '<tr><td colspan="5"><h4>Games: </h4>';
+    
 }
 function renderAbout() {
     // filling the page with the contents of the developers collection (eventually, would become a map with markers)
@@ -90,12 +78,63 @@ function renderGames() {
         for (var i = 0; i < unitPrices.length; i++) {
             unitPrices[i].innerHTML = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(unitPrices[i].innerHTML);
         }
-
+        
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
             $(this).prepend("<td><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
         });
     });
+}
+function renderOrders(){
+    // $('.table-expandable').each(function () {
+    //     var table = $(this);
+    //     table.children('thead').children('tr').append('<th></th>');
+    //     table.children('tbody').children('tr').filter(':odd').hide();
+    //     table.children('tbody').children('tr').filter(':even').click(function () {
+    //         var element = $(this);
+    //         element.next('tr').toggle('fast');
+    //         element.find(".table-expandable-arrow").toggleClass("up");
+    //     });
+    //     table.children('tbody').children('tr').filter(':even').each(function () {
+    //         var element = $(this);
+    //         element.append('<td><div class="table-expandable-arrow"></div></td>');
+    //     });
+    // });
+    
+    readAndFillTable($("#orders"), "orders", false, false, ["games"], function (data) {
+        for (var i = 0; i < data.length; i++) {
+            var html = '';
+            html += '<td colspan="5"><h4>Games:</h4><ul>';
+            //html += '<td data-colname="' + field + '">' + data[i][field] + "</td>";
+            for (var j = 0; j < data[i]['games'].length; j++){
+                html += '<li><h5>Game ID: '+ (data[i]['games'])[j]['gameID'] + '</h5> Number of units: '+ (data[i]['games'])[j]['numberOfUnits']+ '</li>';//j instead of 0
+            }
+            html += "</ul></td>"; // closing the games row
+            
+            $("#orders").find("table tbody #tr"+ i).append(html); // appending the new html
+        }
+        // changing the release dates from ISODate format (as stored in MongoDB) to simple day-month-year format
+        var releaseDates = $("#orders").find("table td[data-colname='orderDate']"); // finding the relevant table cells, identified by the colname
+        for (var i = 0; i < releaseDates.length; i++) {
+            releaseDates[i].innerHTML = new Date(releaseDates[i].innerHTML).toLocaleDateString("he-IL");
+        }
+
+        $('.table-expandable').each(function () {
+            var table = $(this);
+            table.children('thead').children('tr').append('<th></th>');
+            table.children('tbody').children('tr').filter(':odd').hide();
+            table.children('tbody').children('tr').filter(':even').click(function () {
+                var element = $(this);
+                element.next('tr').toggle('fast');
+                element.find(".table-expandable-arrow").toggleClass("up");
+            });
+            table.children('tbody').children('tr').filter(':even').each(function () {
+                var element = $(this);
+                element.append('<td><div class="table-expandable-arrow"></div></td>');
+            });
+        });
+    });
+
 }
 
 /* Providing optional parameters indicating whether to include edit/delete buttons in the generated table, as well as an optional array of fields to
@@ -139,6 +178,9 @@ function readAndFillTable(page, collection, withEditBtn = true, withDeleteBtn = 
                 html += '<td>' + actionBtns + '</td>';
             }
             html += "</tr>"; // closing the current row
+            if(collection == "orders")
+                html += '<tr id="tr'+ i +'"></tr>';
+
         }
 
         // we also need to append a header in the table for the buttons, if they exist
