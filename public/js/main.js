@@ -63,7 +63,7 @@ function renderGames() {
         // changing the release dates from ISODate format (as stored in MongoDB) to simple day-month-year format
         var releaseDates = $("#games").find("table td[data-colname='releaseDate']"); // finding the relevant table cells, identified by the colname
         for (var i = 0; i < releaseDates.length; i++) {
-            releaseDates[i].innerHTML = new Date(releaseDates[i].innerHTML).toLocaleDateString();
+            releaseDates[i].innerHTML = new Date(releaseDates[i].innerHTML).toLocaleDateString("he-IL");
         }
 
         // formatting prices with dollar sign
