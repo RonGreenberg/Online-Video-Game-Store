@@ -105,7 +105,7 @@ table {
 }
 
 /* class for overlay of the popup displayed when clicking Add New */
-.popup-overlay {
+.popup-overlay, .video-overlay {
     display: none; /* hidden by default */
     position: fixed; /* stay in place */
     z-index: 1; /* sit on top of the rest of the page */
@@ -173,6 +173,28 @@ button:hover {
     background-color: firebrick;
 }
 
+.btn-play {
+    visibility: hidden; /* hidden until hovering */
+    background-color: rgba(0,0,0,0.3);
+    background-image: url('../assets/images/play_icon.png');
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+td:hover .btn-play {
+    visibility: visible;
+    background-color: rgba(0,0,0,0.3);
+}
+
+video {
+    top: 50%;
+    left: 50%;
+}
 
 .container {
     display: grid; /* aligning elements within the container using CSS grid */

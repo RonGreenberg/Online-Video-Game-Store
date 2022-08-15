@@ -86,7 +86,12 @@ function renderGames() {
         
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
-            $(this).prepend("<td><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
+            $(this).prepend("<td style='position: relative;'><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
+        });
+
+        // adding a play button on top of each image
+        $("#games").find("table tbody td img").each(function(index) {
+            $(this).after("<button class='btn-play'></button>");
         });
     });
 }

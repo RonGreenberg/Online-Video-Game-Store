@@ -4,6 +4,13 @@ table {
 table td {
 	padding: 15px;
 }
+
+/* make image fill entire table cell */
+table td img {
+	display: block;
+	margin: -15px;
+}
+
 table thead th {
 	background-color: #54585d;
 	color: #ffffff;
