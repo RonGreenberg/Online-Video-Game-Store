@@ -96,25 +96,10 @@ function renderGames() {
     });
 }
 function renderOrders(){
-    // $('.table-expandable').each(function () {
-    //     var table = $(this);
-    //     table.children('thead').children('tr').append('<th></th>');
-    //     table.children('tbody').children('tr').filter(':odd').hide();
-    //     table.children('tbody').children('tr').filter(':even').click(function () {
-    //         var element = $(this);
-    //         element.next('tr').toggle('fast');
-    //         element.find(".table-expandable-arrow").toggleClass("up");
-    //     });
-    //     table.children('tbody').children('tr').filter(':even').each(function () {
-    //         var element = $(this);
-    //         element.append('<td><div class="table-expandable-arrow"></div></td>');
-    //     });
-    // });
-    
-    readAndFillTable($("#orders"), "orders", false, false, ["games"], function (data) {
+    readAndFillTable($("#orders"), "orders", true, true, ["games"], function (data) {
         for (var i = 0; i < data.length; i++) {
             var html = '';
-            html += '<td colspan="5"><h4>Games:</h4><ul>';
+            html += '<td colspan="6"><h4>Games:</h4><ul>';
             //html += '<td data-colname="' + field + '">' + data[i][field] + "</td>";
             for (var j = 0; j < data[i]['games'].length; j++){
                 html += '<li><h5>Game ID: '+ (data[i]['games'])[j]['gameID'] + '</h5> Number of units: '+ (data[i]['games'])[j]['numberOfUnits']+ '</li>';//j instead of 0
@@ -213,3 +198,9 @@ function readAndFillTable(page, collection, withEditBtn = true, withDeleteBtn = 
 
     
 }
+
+// var today = new Date();
+// var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+// $("#orderDate").setAttribute("value", date);
+// $("#orderDate").setAttribute("max", date);
+
