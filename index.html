@@ -41,6 +41,7 @@
             <div class="page" id="games" style="display: none;">
                 <button class="btn-add-new">Add New</button>
                 <button class="btn-search">Search</button>
+                <button class="btn-clear-search">Clear Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
@@ -97,6 +98,7 @@
             <div class="page" id="customers" style="display: none;">
                 <button class="btn-add-new">Add New</button>
                 <button class="btn-search">Search</button>
+                <button class="btn-clear-search">Clear Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
@@ -129,6 +131,7 @@
             <div class="page" id="orders" style="display: none;">
                 <button class="btn-add-new">Add New</button>
                 <button class="btn-search">Search</button>
+                <button class="btn-clear-search">Clear Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
@@ -207,6 +210,10 @@
             popup.css('display', 'block'); // displaying the popup
             popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
         });
+        
+        $('.btn-clear-search').click(function() {
+            displayTable();
+        });
 
         // event handler for clicking Cancel buttons (Cancel buttons in all pages should use this class)
         $('.btn-cancel').click(function() {
@@ -248,6 +255,17 @@
             }
         });
 
+        function displayTable()
+        {
+            var table = $('form').closest('.page').find('table'); // gets the table
+            
+            for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
+            {
+                var row = $(table).find('tr')[i];
+                row.style.display="table-row"; // displaying the row
+            }
+        }
+
         // event handler for submitting the form to the server (when the submit/confirm button is clicked). Could be a new record or an edited one
         $('form').on('submit', function(event) {
             event.preventDefault();
@@ -257,20 +275,14 @@
 
             var textFields = $(this).find('input'); // get all input elements
 
-            var allEmpty = true; // check if all inputs are empty
-            var allFilled = true;
+            var allFilled = true;// check if all inputs are filled
             for(var i = 0; i < textFields.length; i++)
             {
-                if(textFields.eq(i).val() != "")
-                {
-                    allEmpty = false;
-                } else
+                if(textFields.eq(i).val() == "")
                     allFilled = false;
             }
-            if(allEmpty) // if all inputs are empty, refill the table
-            {
-                readAndFillTable(page, collection);
-            }
+            displayTable();
+            
 
 
             if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
@@ -282,15 +294,14 @@
 
                     for(var j = 0, colIndex = 0; j < $(row).find('td').length-1 && colIndex < $(row).find('td').length-1; j++, colIndex++) // run on the columns
                     {
-                        // temporary fix - do not check image field
-                        if ($(row).find('td').eq(colIndex).find("img").length > 0) {
+                        //check if td has a data-colname, which means that td has a input field to check if equals
+                        if (!($(row).find('td')[colIndex].hasAttribute("data-colname"))) {
                             colIndex++;
                         }
 
-                        if(textFields.eq(j).val() != "" && textFields.eq(j).val() != $(row).find('td')[colIndex].innerHTML) // remove the row if the input is not empty and not equal to the value in the table
+                        if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) // remove the row if the input is not empty and not equal to the value in the table
                         {
-                            row.remove();
-                            i--;
+                            row.style.display="none";
                             break;
                         }
                     }
