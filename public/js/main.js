@@ -49,11 +49,6 @@ function renderPage(hashKey) {
     }
 }
 
-function readAndFillOrderGames(){
-    var html = '';
-    html += '<tr><td colspan="5"><h4>Games: </h4>';
-    
-}
 function renderAbout() {
     // filling the page with the contents of the developers collection (eventually, would become a map with markers)
     readAndFillTable($("#about"), "developers", false, false);
@@ -64,19 +59,23 @@ function renderCustomers() {
     readAndFillTable($("#customers"), "customers");
 }
 
+function convertISODateElements(dates) {
+    // changing the dates from ISODate format (as stored in MongoDB) to simple day-month-year format
+    for (var i = 0; i < dates.length; i++) {
+        dates[i].innerHTML = new Date(dates[i].innerHTML).toLocaleDateString("he-IL");
+    }
+}
+
 function renderGames() {
     /* filling the page with the contents of the games collection, followed by additional processing (if we would not use a callback function and
        written the logic after the call to readAndFillTable, it would not work because the AJAX GET request is asynchronous, so by the time we finish
        the call to readAndFillTable, the table would not be fully loaded yet. So we have to supply a callback that gets called at the end of the callback
-       of the AJAX request, when the table is fully loaded). Note that we also exclude the image field from the readAndFillTable logic, since we take
-       care of it separately as part of the callback.
+       of the AJAX request, when the table is fully loaded). Note that we also exclude the image and trailer fields from the readAndFillTable logic,
+       since we take care of them separately as part of the callback.
      */
-    readAndFillTable($("#games"), "games", undefined, undefined, ["image"], function(data) {
-        // changing the release dates from ISODate format (as stored in MongoDB) to simple day-month-year format
+    readAndFillTable($("#games"), "games", undefined, undefined, ["image", "trailer"], function(data) {
         var releaseDates = $("#games").find("table td[data-colname='releaseDate']"); // finding the relevant table cells, identified by the colname
-        for (var i = 0; i < releaseDates.length; i++) {
-            releaseDates[i].innerHTML = new Date(releaseDates[i].innerHTML).toLocaleDateString("he-IL");
-        }
+        convertISODateElements(releaseDates);
 
         // formatting prices with dollar sign
         var unitPrices = $("#games").find("table td[data-colname='unitPrice']");
@@ -86,42 +85,49 @@ function renderGames() {
         
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
+            // using position: relative so that the play button can be placed exactly over the image later
             $(this).prepend("<td style='position: relative;'><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
         });
 
         // adding a play button on top of each image
         $("#games").find("table tbody td img").each(function(index) {
-            $(this).after("<button class='btn-play'></button>");
+            // storing the path to the trailer video as a data attribute of the play button in current row
+            $(this).after("<button class='btn-play' data-src='" + data[index]["trailer"] + "'></button>");
         });
     });
 }
-function renderOrders(){
-    readAndFillTable($("#orders"), "orders", true, true, ["games"], function (data) {
-        for (var i = 0; i < data.length; i++) {
-            var html = '';
-            html += '<td colspan="6"><h4>Games:</h4><ul>';
-            //html += '<td data-colname="' + field + '">' + data[i][field] + "</td>";
-            for (var j = 0; j < data[i]['games'].length; j++){
-                html += '<li><h5>Game ID: '+ (data[i]['games'])[j]['gameID'] + '</h5> Number of units: '+ (data[i]['games'])[j]['numberOfUnits']+ '</li>';//j instead of 0
-            }
-            html += "</ul></td>"; // closing the games row
-            
-            $("#orders").find("table tbody #tr"+ i).append(html); // appending the new html
-        }
-        // changing the release dates from ISODate format (as stored in MongoDB) to simple day-month-year format
-        var releaseDates = $("#orders").find("table td[data-colname='orderDate']"); // finding the relevant table cells, identified by the colname
-        for (var i = 0; i < releaseDates.length; i++) {
-            releaseDates[i].innerHTML = new Date(releaseDates[i].innerHTML).toLocaleDateString("he-IL");
-        }
 
-        $('.table-expandable').each(function () {
+function renderOrders() {
+    readAndFillTable($("#orders"), "orders", undefined, undefined, ["games"], function(data) {
+        /* Selecting the currently existing table rows, and adding rows after each one of them, which can be
+         * expanded from the original rows. The selection of $("#orders").find("table tbody tr") happens only once,
+         * so the tr elements that are added during the each() loop won't be included in the iteration and the
+         * references of the original rows will be maintained.
+         */
+        $("#orders").find("table tbody tr").each(function(i) {
+            var html = '';
+            html += '<tr><td colspan="6"><h4>Games:</h4><ul>';
+            for (var j = 0; j < data[i]['games'].length; j++) {
+                html += '<li><h5>Game ID: ' + (data[i]['games'])[j]['gameID'] + '</h5> Units: ' + (data[i]['games'])[j]['numberOfUnits']+ '</li>';
+            }
+            html += "</ul></td></tr>"; // closing the games row
+            $(this).after(html); // appending the new html
+        });
+        
+        // converting order dates to simple dates
+        var orderDates = $("#orders").find("table td[data-colname='orderDate']");
+        convertISODateElements(orderDates);
+
+        $('.table-expandable').each(function() {
             var table = $(this);
-            //table.children('thead').children('tr').append('<th></th>');
-            table.children('tbody').children('tr').filter(':odd').hide();
-            table.children('tbody').children('tr').filter(':even').click(function () {
-                var element = $(this);
-                element.next('tr').toggle('fast');
-                element.find(".table-expandable-arrow").toggleClass("up");
+            table.children('tbody').children('tr').filter(':odd').hide(); // hiding the odd rows (those that contain the game details)
+            table.children('tbody').children('tr').filter(':even').on("click", function(event) {
+                // expanding the row only if a table cell itself was clicked, otherwise it would also expand when clicking on edit/delete
+                if ($(event.target).is('td')) {
+                    var element = $(this);
+                    element.next('tr').toggle('fast');
+                    element.find(".table-expandable-arrow").toggleClass("up");
+                }
             });
             table.children('tbody').children('tr').filter(':even').each(function () {
                 var element = $(this);
@@ -129,7 +135,6 @@ function renderOrders(){
             });
         });
     });
-
 }
 
 /* Providing optional parameters indicating whether to include edit/delete buttons in the generated table, as well as an optional array of fields to
@@ -173,9 +178,6 @@ function readAndFillTable(page, collection, withEditBtn = true, withDeleteBtn = 
                 html += '<td>' + actionBtns + '</td>';
             }
             html += "</tr>"; // closing the current row
-            if(collection == "orders")
-                html += '<tr id="tr'+ i +'"></tr>';
-
         }
 
         // we also need to append a header in the table for the buttons, if they exist
@@ -194,9 +196,7 @@ function readAndFillTable(page, collection, withEditBtn = true, withDeleteBtn = 
             // passing the data we received from MongoDB (for special fields that were excluded here and need to be treated separately, such as image)
             callback(data);
         }
-    });
-
-    
+    });   
 }
 
 // var today = new Date();

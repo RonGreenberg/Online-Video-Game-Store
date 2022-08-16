@@ -70,8 +70,8 @@
                     </div>
                 </div>
                 <div class="video-overlay">
-                    <video width="500" height="400" controls>
-                        <source src="public/assets/games_media/videos/Fortnite.mp4" type="video/mp4">
+                    <video id="gameTrailer" width="500" controls> <!-- height is auto-adjusted according to video aspect ratio, using height: auto in CSS -->
+                        <source src="" type="video/mp4">
                     </video>
                 </div>
                 <table>
@@ -147,46 +147,16 @@
                     </div>
                 </div>
             
-                <table class="table table-hover table-expandable table-striped">
+                <table class="table table-hover table-expandable">
                     <thead>
-                    <tr>
-                        <th>Order number</th>
-                        <th>Customer ID</th>
-                        <th>Payment method</th>
-                        <th>Order date</th>
-                    </tr>
+                        <tr>
+                            <th>Order number</th>
+                            <th>Customer ID</th>
+                            <th>Payment method</th>
+                            <th>Order date</th>
+                        </tr>
                     </thead>
-                    <tbody>
-                    <tr>
-                        <td>United States of America</td>
-                        <td>306,939,000</td>
-                        <td>9,826,630 km2</td>
-                        <td>English</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5"><h4>Games: </h4>
-                        <ul>
-                            <li><a href="http://en.wikipedia.org/wiki/Usa">USA on Wikipedia</a></li>
-                            <li><a href="http://nationalatlas.gov/">National Atlas of the United States</a></li>
-                            <li><a href="http://www.nationalcenter.org/HistoricalDocuments.html">Historical Documents</a></li>
-                        </ul></td>
-                    </tr>
-                    <tr>
-                        <td>United Kingdom </td>
-                        <td>61,612,300</td>
-                        <td>244,820 km2</td>
-                        <td>English</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5"><h4>Additional information</h4>
-                        <ul>
-                            <li><a href="http://en.wikipedia.org/wiki/United_kingdom">UK on Wikipedia</a></li>
-                            <li><a href="http://www.visitbritain.com/">Official tourist guide to Britain</a></li>
-                            <li><a href="http://www.statistics.gov.uk/StatBase/Product.asp?vlnk=5703">Official Yearbook of the United Kingdom</a></li>
-                        </ul></td>
-                    </tr>
-
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
 
@@ -351,8 +321,17 @@
         });
 
         $(document).on("click", ".btn-play", function() {
-            var videoOverlay = $(this).closest('.page').find('.video-overlay');
-            videoOverlay.css('display', 'block');
+            $('#gameTrailer > source').attr('src', $(this).attr('data-src')); // setting the video source from the source field stored in the play button
+            document.getElementById('gameTrailer').load(); // reloading the video element (must use pure DOM instead of jQuery)
+            $(this).closest('.page').find('.video-overlay').css('display', 'block'); // displaying the video popup
+        });
+
+        $('.video-overlay').click(function(e) {
+            // checking that we actually clicked the overlay and not the video itself
+            if ($(e.target).is('.video-overlay')) {
+                document.getElementById('gameTrailer').pause(); // pausing the video
+                $(this).css('display', 'none'); // hiding the overlay (and the video) when clicking on it
+            }
         });
     </script>
 </body>

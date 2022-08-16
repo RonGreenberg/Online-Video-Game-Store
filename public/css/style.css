@@ -178,6 +178,7 @@ button:hover {
     background-color: rgba(0,0,0,0.3);
     background-image: url('../assets/images/play_icon.png');
     background-size: cover;
+    /* having the play button cover the entire image */
     position: absolute;
     top: 0;
     left: 0;
@@ -186,14 +187,18 @@ button:hover {
     margin: 0;
 }
 
+/* selector that applies to the play button when hovering on the td that wraps it (since we can't hover on an invisible element) */
 td:hover .btn-play {
     visibility: visible;
     background-color: rgba(0,0,0,0.3);
 }
 
 video {
-    top: 50%;
-    left: 50%;
+    height: auto;
+    /* position video in the center of the screen by distributing the empty space on the left and the right side evenly */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .container {
@@ -223,7 +228,7 @@ table.table-expandable.table-hover > tbody > tr:nth-child(even):hover tsd {
 }
 
 table.table-expandable > tbody > tr div.table-expandable-arrow {
-    background:transparent url(../images/arrows.png) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;
+    background:transparent url(../assets/images/arrows.png) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;
 }
 
 table.table-expandable > tbody > tr div.table-expandable-arrow.up {
