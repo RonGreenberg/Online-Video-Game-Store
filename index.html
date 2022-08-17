@@ -212,7 +212,8 @@
         });
         
         $('.btn-clear-search').click(function() {
-            displayTable();
+            
+            displayTable($(this).closest('.page').find("form")[0]);
         });
 
         // event handler for clicking Cancel buttons (Cancel buttons in all pages should use this class)
@@ -255,14 +256,17 @@
             }
         });
 
-        function displayTable()
+        function displayTable(frm)
         {
-            var table = $('form').closest('.page').find('table'); // gets the table
+            var table = $(frm).closest('.page').find('table'); // gets the table
             
             for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
             {
                 var row = $(table).find('tr')[i];
-                row.style.display="table-row"; // displaying the row
+                if(!($(row).find('td')[0].hasAttribute("colspan")))
+                    row.style.display="table-row"; // displaying the row
+                else
+                    row.style.display="none";
             }
         }
 
@@ -281,27 +285,37 @@
                 if(textFields.eq(i).val() == "")
                     allFilled = false;
             }
-            displayTable();
-            
-
+            displayTable(this);
 
             if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
             {
+                
                 var table = $(this).closest('.page').find('table'); // gets the table
                 for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
                 {
                     var row = $(table).find('tr')[i];
-
+                   
                     for(var j = 0, colIndex = 0; j < $(row).find('td').length-1 && colIndex < $(row).find('td').length-1; j++, colIndex++) // run on the columns
                     {
                         //check if td has a data-colname, which means that td has a input field to check if equals
                         if (!($(row).find('td')[colIndex].hasAttribute("data-colname"))) {
                             colIndex++;
                         }
+                        if(colIndex > $(row).find('td').length-2)
+                            break;
 
-                        if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) // remove the row if the input is not empty and not equal to the value in the table
+                        if(textFields.eq(j).val() != "" && textFields.eq(j).attr("type") == "date")
                         {
-                            row.style.display="none";
+                            var dt1 = textFields.eq(j).val().split("-"); // The input date
+                            var dt2 = $(row).find('td')[colIndex].innerHTML.split("."); // The td date
+                            if(!(parseInt(dt1[2]) == parseInt(dt2[0]) && parseInt(dt1[1]) == parseInt(dt2[1]) && parseInt(dt1[0]) == parseInt(dt2[2])))
+                            {
+                                row.style.display="none"; // row disappear if the date in the input is not the same as in the td
+                                break;
+                            }    
+                        }else if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) 
+                        {
+                            row.style.display="none"; // row disappear if the input is not empty and not equal to the value in the table
                             break;
                         }
                     }
