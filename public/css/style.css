@@ -127,7 +127,7 @@ table {
     width: 20%;
 }
 
-input[type=text] {
+input {
     display: block; /* in order to have each input field and labels on separate lines */
 }
 

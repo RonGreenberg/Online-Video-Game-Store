@@ -44,27 +44,32 @@
                 <button class="btn-clear-search">Clear Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
-                        <form method="post">
+                        <form method="post" enctype="multipart/form-data">
                             <label for="gameID">ID</label>
-                            <input type="text" name="gameID" id="gameID" />
+                            <!-- Not using the real 'required' attribute, because the form is also used for search where not all fields must be filled -->
+                            <input type="text" name="gameID" id="gameID" class="required" />
                             <label for="gameName">Name</label>
-                            <input type="text" name="gameName" id="gameName" />
+                            <input type="text" name="gameName" id="gameName" class="required" />
                             <label for="description">Description</label>
-                            <input type="text" name="description" id="description" />
+                            <input type="text" name="description" id="description" class="required" />
                             <label for="unitPrice">Unit Price</label>
-                            <input type="text" name="unitPrice" id="unitPrice" />
+                            <input type="text" name="unitPrice" id="unitPrice" class="required" />
                             <label for="developer">Developer</label>
-                            <input type="text" name="developer" id="developer" />
+                            <input type="text" name="developer" id="developer" class="required" />
                             <label for="version">Version</label>
-                            <input type="text" name="version" id="version" />
+                            <input type="text" name="version" id="version" class="required" />
                             <label for="releaseDate">Release Date</label>
-                            <input type="text" name="releaseDate" id="releaseDate" />
+                            <input type="date" name="releaseDate" id="releaseDate" class="required" />
                             <label for="genre">Genre</label>
-                            <input type="text" name="genre" id="genre" />
+                            <input type="text" name="genre" id="genre" class="required" />
                             <label for="platform">Platform</label>
-                            <input type="text" name="platform" id="platform" />
+                            <input type="text" name="platform" id="platform" class="required" />
                             <label for="licenseType">License Type</label>
-                            <input type="text" name="licenseType" id="licenseType" />
+                            <input type="text" name="licenseType" id="licenseType" class="required" />
+                            <label for="image">Upload Image:</label>
+                            <input type="file" name="image" id="image" />
+                            <label for="trailer">Upload Trailer:</label>
+                            <input type="file" name="trailer" id="trailer" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -82,7 +87,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Description</th>
-                            <th>Unit Price</th>
+                            <th>Unit Price ($)</th>
                             <th>Developer</th>
                             <th>Version</th>
                             <th>Release Date</th>
@@ -103,13 +108,13 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="customerID">ID</label>
-                            <input type="text" name="customerID" id="customerID" />
+                            <input type="text" name="customerID" id="customerID" class="required" />
                             <label for="customerName">Name</label>
-                            <input type="text" name="customerName" id="customerName" />
+                            <input type="text" name="customerName" id="customerName" class="required" />
                             <label for="address">Address</label>
-                            <input type="text" name="address" id="address" />
+                            <input type="text" name="address" id="address" class="required" />
                             <label for="email">Email</label>
-                            <input type="text" name="email" id="email" />
+                            <input type="text" name="email" id="email" class="required" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -136,13 +141,13 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="orderNumber">Order number</label>
-                            <input type="text" name="orderNumber" id="orderNumber" />
+                            <input type="text" name="orderNumber" id="orderNumber" class="required" />
                             <label for="customerID">Customer ID</label>
-                            <input type="text" name="customerID" id="customerID" />
+                            <input type="text" name="customerID" id="customerID" class="required" />
                             <label for="paymentMethod">Payment method</label>
-                            <input type="text" name="paymentMethod" id="paymentMethod" />
+                            <input type="text" name="paymentMethod" id="paymentMethod" class="required" />
                             <label for="orderDate">Order date</label>
-                            <input type="date" name="orderDate" id="orderDate" value="today(js will change this)" min="2017-04-01" max="today(js will change this)" />
+                            <input type="date" name="orderDate" id="orderDate" value="today(js will change this)" min="2017-04-01" max="today(js will change this)" class="required" />
 
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
@@ -212,7 +217,6 @@
         });
         
         $('.btn-clear-search').click(function() {
-            
             displayTable($(this).closest('.page').find("form")[0]);
         });
 
@@ -229,6 +233,7 @@
          */
         $(document).on("click", ".btn-edit", function() {
             var popup = $(this).closest('.page').find('.popup-overlay'); // finding the popup overlay from the same page where the button was clicked
+            popup.find('form')[0].reset();
             var row = $(this).parent().siblings('td'); // the button is stored inside a td, so we get to its parent and take its td siblings, which contain the actual data
             for (var i = 0; i < row.length; i++) {
                 // searching input fields whose id is equal to the column name we stored in the current td, and setting their text to the text from the td
@@ -250,8 +255,8 @@
                 
                 // sending an HTTP POST request to the appropriate route in the server, putting the object id in the request body
                 $.post('delete?collection=' + collection, "id=" + $(this).attr('data-id'), function(data) {
-                    // if the request is successful, we refresh the table
-                    readAndFillTable(page, collection);
+                    // if the request is successful, we refresh the page
+                    renderPage(collection);
                 });
             }
         });
@@ -274,22 +279,15 @@
         $('form').on('submit', function(event) {
             event.preventDefault();
 
-            var page = $(this).closest('.page'); 
+            var page = $(this).closest('.page');
             var collection = page.attr('id');
 
             var textFields = $(this).find('input'); // get all input elements
 
-            var allFilled = true;// check if all inputs are filled
-            for(var i = 0; i < textFields.length; i++)
-            {
-                if(textFields.eq(i).val() == "")
-                    allFilled = false;
-            }
-            displayTable(this);
+            displayTable($(this)); // displaying the entire table by default. in case of a blank search, no rows will be hidden
 
             if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
             {
-                
                 var table = $(this).closest('.page').find('table'); // gets the table
                 for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
                 {
@@ -304,29 +302,28 @@
                         if(colIndex > $(row).find('td').length-2)
                             break;
 
-                        if(textFields.eq(j).val() != "" && textFields.eq(j).attr("type") == "date")
-                        {
-                            var dt1 = textFields.eq(j).val().split("-"); // The input date
-                            var dt2 = $(row).find('td')[colIndex].innerHTML.split("."); // The td date
-                            if(!(parseInt(dt1[2]) == parseInt(dt2[0]) && parseInt(dt1[1]) == parseInt(dt2[1]) && parseInt(dt1[0]) == parseInt(dt2[2])))
-                            {
-                                row.style.display="none"; // row disappear if the date in the input is not the same as in the td
-                                break;
-                            }    
-                        }else if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) 
+                        // the following check will work for dates as well since both the input fields and the table cells now use the yyyy-mm-dd format
+                        if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) 
                         {
                             row.style.display="none"; // row disappear if the input is not empty and not equal to the value in the table
                             break;
                         }
                     }
                 }
-            }else{ // if its not search popup(it might be create popup or edit popup)
-                
+            }else { // if its not search popup(it might be create popup or edit popup)
+                var allFilled = true;// check if all inputs are filled
+                var requiredFields = $(this).find('input[class="required"]');
+                requiredFields.each(function() {
+                    if ($(this).val() == '') {
+                        allFilled = false;
+                    }
+                });
                 if(!allFilled) // if not all inputs are filled, give alert, then return
                 {
                     alert("Not all fields are filled.");
                     return;
                 }
+
                 var route;
                 if ($(this).attr("data-id")) { // if the form contains a data-id attribute, it means we got here as a result of editing
                     route = 'update?collection=' + collection + "&id=" + $(this).attr("data-id");
@@ -338,7 +335,7 @@
                 $.post(route, $(this).serialize(), function(data) {
                     // if the request is successful, we hide the popup and refresh the table
                     page.find('.popup-overlay').css('display', 'none');
-                    readAndFillTable(page, collection);
+                    renderPage(collection);
                 });
             }
             page.find('.popup-overlay').css('display', 'none');

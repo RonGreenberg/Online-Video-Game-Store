@@ -28,22 +28,22 @@ function selectPage(hashKey) {
         }
     }
 
-    renderPage(hashKey);
+    renderPage(hashKey.substring(1));
 }
 
-function renderPage(hashKey) {
+function renderPage(page) {
     // calling the appropriate rendering function for the page itself
-    switch (hashKey) {
-        case "#about":
+    switch (page) {
+        case "about":
             renderAbout();
             break;
-        case "#customers":
+        case "customers":
             renderCustomers();
             break;
-        case "#games":
+        case "games":
             renderGames();
             break;
-        case "#orders":
+        case "orders":
             renderOrders();
             break;
     }
@@ -60,9 +60,8 @@ function renderCustomers() {
 }
 
 function convertISODateElements(dates) {
-    // changing the dates from ISODate format (as stored in MongoDB) to simple day-month-year format
     for (var i = 0; i < dates.length; i++) {
-        dates[i].innerHTML = new Date(dates[i].innerHTML).toLocaleDateString("he-IL");
+        dates[i].innerHTML = dates[i].innerHTML.split('T')[0]; // taking only the yyyy-mm-dd from the full ISO format, which can then be easily copied to date input field
     }
 }
 
@@ -77,11 +76,11 @@ function renderGames() {
         var releaseDates = $("#games").find("table td[data-colname='releaseDate']"); // finding the relevant table cells, identified by the colname
         convertISODateElements(releaseDates);
 
-        // formatting prices with dollar sign
-        var unitPrices = $("#games").find("table td[data-colname='unitPrice']");
-        for (var i = 0; i < unitPrices.length; i++) {
-            unitPrices[i].innerHTML = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(unitPrices[i].innerHTML);
-        }
+        // // formatting prices with dollar sign
+        // var unitPrices = $("#games").find("table td[data-colname='unitPrice']");
+        // for (var i = 0; i < unitPrices.length; i++) {
+        //     unitPrices[i].innerHTML = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(unitPrices[i].innerHTML);
+        // }
         
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
