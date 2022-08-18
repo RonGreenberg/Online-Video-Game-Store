@@ -44,32 +44,31 @@
                 <button class="btn-clear-search">Clear Search</button>
                 <div class="popup-overlay">
                     <div class="popup-content">
-                        <form method="post" enctype="multipart/form-data">
+                        <form method="post">
                             <label for="gameID">ID</label>
-                            <!-- Not using the real 'required' attribute, because the form is also used for search where not all fields must be filled -->
-                            <input type="text" name="gameID" id="gameID" class="required" />
+                            <input type="text" name="gameID" id="gameID" required />
                             <label for="gameName">Name</label>
-                            <input type="text" name="gameName" id="gameName" class="required" />
+                            <input type="text" name="gameName" id="gameName" required />
                             <label for="description">Description</label>
-                            <input type="text" name="description" id="description" class="required" />
+                            <input type="text" name="description" id="description" required />
                             <label for="unitPrice">Unit Price</label>
-                            <input type="text" name="unitPrice" id="unitPrice" class="required" />
+                            <input type="text" name="unitPrice" id="unitPrice" required />
                             <label for="developer">Developer</label>
-                            <input type="text" name="developer" id="developer" class="required" />
+                            <input type="text" name="developer" id="developer" required />
                             <label for="version">Version</label>
-                            <input type="text" name="version" id="version" class="required" />
+                            <input type="text" name="version" id="version" required />
                             <label for="releaseDate">Release Date</label>
-                            <input type="date" name="releaseDate" id="releaseDate" class="required" />
+                            <input type="date" name="releaseDate" id="releaseDate" required />
                             <label for="genre">Genre</label>
-                            <input type="text" name="genre" id="genre" class="required" />
+                            <input type="text" name="genre" id="genre" required />
                             <label for="platform">Platform</label>
-                            <input type="text" name="platform" id="platform" class="required" />
+                            <input type="text" name="platform" id="platform" required />
                             <label for="licenseType">License Type</label>
-                            <input type="text" name="licenseType" id="licenseType" class="required" />
-                            <label for="image">Upload Image:</label>
-                            <input type="file" name="image" id="image" />
-                            <label for="trailer">Upload Trailer:</label>
-                            <input type="file" name="trailer" id="trailer" />
+                            <input type="text" name="licenseType" id="licenseType" required />
+                            <label for="image" class="hide-on-search">Upload Image:</label>
+                            <input type="file" accept="image/*" name="image" id="image" class="hide-on-search" />
+                            <label for="trailer" class="hide-on-search">Upload Trailer:</label>
+                            <input type="file" accept=".mp4" name="trailer" id="trailer" class="hide-on-search" />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -108,13 +107,13 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="customerID">ID</label>
-                            <input type="text" name="customerID" id="customerID" class="required" />
+                            <input type="text" name="customerID" id="customerID" required />
                             <label for="customerName">Name</label>
-                            <input type="text" name="customerName" id="customerName" class="required" />
+                            <input type="text" name="customerName" id="customerName" required />
                             <label for="address">Address</label>
-                            <input type="text" name="address" id="address" class="required" />
+                            <input type="text" name="address" id="address" required />
                             <label for="email">Email</label>
-                            <input type="text" name="email" id="email" class="required" />
+                            <input type="text" name="email" id="email" required />
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -141,13 +140,13 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="orderNumber">Order number</label>
-                            <input type="text" name="orderNumber" id="orderNumber" class="required" />
+                            <input type="text" name="orderNumber" id="orderNumber" required />
                             <label for="customerID">Customer ID</label>
-                            <input type="text" name="customerID" id="customerID" class="required" />
+                            <input type="text" name="customerID" id="customerID" required />
                             <label for="paymentMethod">Payment method</label>
-                            <input type="text" name="paymentMethod" id="paymentMethod" class="required" />
+                            <input type="text" name="paymentMethod" id="paymentMethod" required />
                             <label for="orderDate">Order date</label>
-                            <input type="date" name="orderDate" id="orderDate" value="today(js will change this)" min="2017-04-01" max="today(js will change this)" class="required" />
+                            <input type="date" name="orderDate" id="orderDate" value="today(js will change this)" min="2017-04-01" max="today(js will change this)" required />
 
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
@@ -213,7 +212,13 @@
             var popup = $(this).closest('.page').find('.popup-overlay'); // finding the popup overlay from the same page where the button was clicked
             $(popup.find('button')[1]).html("Search"); // change the name of the button
             popup.css('display', 'block'); // displaying the popup
-            popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
+
+            popup.find('form').eq(0).find('[class="hide-on-search"]').hide(); // hiding elements that should be hidden when searching (currently image and video upload in Games form)
+            popup.find('form')[0].reset();
+            /* Since we want to allow filling only some of the fields when searching, we can temporarily turn on the novalidate property of the form
+             * so that it doesn't check for required inputs.
+             */
+            popup.find('form').eq(0).prop('noValidate', true); // just like popup.find('form')[0], only that it remains a jQuery object
         });
         
         $('.btn-clear-search').click(function() {
@@ -224,7 +229,9 @@
         $('.btn-cancel').click(function() {
             var popup = $(this).closest('.page').find('.popup-overlay');
             popup.css('display', 'none'); // hiding the popup
+            popup.find('form').eq(0).find('[class="hide-on-search"]').show(); // showing elements that may have been hidden by search
             popup.find('form')[0].removeAttribute("data-id"); // removing the data-id attribute in case we cancel an edit (there's no problem to remove it if it doesn't exist)
+            popup.find('form')[0].removeAttribute('noValidate'); // removing the noValidate attribute, added in case we have clicked search button
         });
 
         /* Event handler for clicking an Edit button. Note that we can't use $(".btn-edit").click(...), because it will bind the event only to the
@@ -255,7 +262,7 @@
                 
                 // sending an HTTP POST request to the appropriate route in the server, putting the object id in the request body
                 $.post('delete?collection=' + collection, "id=" + $(this).attr('data-id'), function(data) {
-                    // if the request is successful, we refresh the page
+                    // if the request is successful, render the updated page
                     renderPage(collection);
                 });
             }
@@ -268,7 +275,7 @@
             for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
             {
                 var row = $(table).find('tr')[i];
-                if(!($(row).find('td')[0].hasAttribute("colspan")))
+                if(!($(row).find('td')[0].hasAttribute("colspan"))) // depends on the fact that in Orders table, rows containing game details (which should be hidden) use the colspan attribute
                     row.style.display="table-row"; // displaying the row
                 else
                     row.style.display="none";
@@ -286,43 +293,33 @@
 
             displayTable($(this)); // displaying the entire table by default. in case of a blank search, no rows will be hidden
 
-            if($(this).find('button')[1].innerHTML == "Search") // check if this is a search popup
-            {
-                var table = $(this).closest('.page').find('table'); // gets the table
-                for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
-                {
-                    var row = $(table).find('tr')[i];
-                   
-                    for(var j = 0, colIndex = 0; j < $(row).find('td').length-1 && colIndex < $(row).find('td').length-1; j++, colIndex++) // run on the columns
-                    {
-                        //check if td has a data-colname, which means that td has a input field to check if equals
-                        if (!($(row).find('td')[colIndex].hasAttribute("data-colname"))) {
-                            colIndex++;
-                        }
-                        if(colIndex > $(row).find('td').length-2)
-                            break;
-
+            if ($(this).find('button')[1].innerHTML == "Search") { // check if this is a search popup                 
+                var rows = $(this).closest('.page').find('table tbody tr'); // gets the rows
+                for (var i = 0; i < rows.length; i++) {
+                    var cells = rows.eq(i).find('td[data-colname]'); // selecting only cells that have a data-colname attribute (not image/video for example)
+                    for (var j = 0; j < cells.length - 1; j++) { // run on the columns (not including the last edit/delete column)
                         // the following check will work for dates as well since both the input fields and the table cells now use the yyyy-mm-dd format
-                        if(textFields.eq(j).val() != "" &&  $(row).find('td')[colIndex].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) 
-                        {
-                            row.style.display="none"; // row disappear if the input is not empty and not equal to the value in the table
+                        if (textFields.eq(j).val() != "" &&  cells[j].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) {
+                            rows[i].style.display = "none"; // row disappears if the input is not empty and not equal to the value in the table
                             break;
                         }
                     }
                 }
-            }else { // if its not search popup(it might be create popup or edit popup)
-                var allFilled = true;// check if all inputs are filled
-                var requiredFields = $(this).find('input[class="required"]');
-                requiredFields.each(function() {
-                    if ($(this).val() == '') {
-                        allFilled = false;
-                    }
-                });
-                if(!allFilled) // if not all inputs are filled, give alert, then return
-                {
-                    alert("Not all fields are filled.");
-                    return;
-                }
+                $(this).removeAttr('noValidate'); // removing the noValidate attribute, now that the search is finished
+                page.find('.popup-overlay').css('display', 'none'); // hiding the popup
+                popup.find('form').eq(0).find('[class="hide-on-search"]').show(); // showing elements that may have been hidden by search
+            } else { // if its not search popup (it might be create popup or edit popup)
+                // var allFilled = true; // check if all inputs are filled
+                // var requiredFields = $(this).find('input[required]');
+                // requiredFields.each(function() {
+                //     if ($(this).val() == '') {
+                //         allFilled = false;
+                //     }
+                // });
+                // if (!allFilled) { // if not all inputs are filled, give alert, then return
+                //     alert("Not all fields are filled.");
+                //     return;
+                // }
 
                 var route;
                 if ($(this).attr("data-id")) { // if the form contains a data-id attribute, it means we got here as a result of editing
@@ -332,13 +329,20 @@
                 }
                 
                 // sending an HTTP POST request to the appropriate route in the server
-                $.post(route, $(this).serialize(), function(data) {
-                    // if the request is successful, we hide the popup and refresh the table
-                    page.find('.popup-overlay').css('display', 'none');
-                    renderPage(collection);
+                $.ajax({
+                    method: "POST",
+                    url: route,
+                    data: new FormData(this), // FormData enables sending key-value pairs representing form fields and their values, using the multipart/form-data encoding, which is required for sending <input type="file"> elements
+                    processData: false, // must be set to false so that the FormData will not be processed and transformed into a query string, which would fail
+                    contentType: false, // forcing jQuery not to add a Content-Type header to the HTTP request, which would mess up the structure of our multipart/form-data request
+                    success: function(data) {
+                        // if the request is successful, hide the popup and render the updated page
+                        page.find('.popup-overlay').css('display', 'none');
+                        renderPage(collection);
+                    }
                 });
             }
-            page.find('.popup-overlay').css('display', 'none');
+            
             $(this).removeAttr("data-id"); // removing the data-id attribute, as the operation is finished
         });
 

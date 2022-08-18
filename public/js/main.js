@@ -75,17 +75,15 @@ function renderGames() {
     readAndFillTable($("#games"), "games", undefined, undefined, ["image", "trailer"], function(data) {
         var releaseDates = $("#games").find("table td[data-colname='releaseDate']"); // finding the relevant table cells, identified by the colname
         convertISODateElements(releaseDates);
-
-        // // formatting prices with dollar sign
-        // var unitPrices = $("#games").find("table td[data-colname='unitPrice']");
-        // for (var i = 0; i < unitPrices.length; i++) {
-        //     unitPrices[i].innerHTML = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(unitPrices[i].innerHTML);
-        // }
         
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
+            var src = data[index]["image"];
+            if (!src) {
+                src = 'public/assets/games_media/images/No_Image_Available.jpg'; // taking a default image from the server in case none was assigned to this game
+            }
             // using position: relative so that the play button can be placed exactly over the image later
-            $(this).prepend("<td style='position: relative;'><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
+            $(this).prepend("<td style='position: relative;'><img src='" + src + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
         });
 
         // adding a play button on top of each image
