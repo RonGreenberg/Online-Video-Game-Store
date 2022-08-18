@@ -56,7 +56,18 @@ function renderAbout() {
 
 function renderCustomers() {
     // filling the page with the contents of the customers collection
-    readAndFillTable($("#customers"), "customers");
+    readAndFillTable($("#customers"), "customers", undefined, undefined, [], function(){
+
+        $("#customers").find("table tbody tr").each(function(){
+            html = '<td data-colname="recommendedGame">';
+            html += 'recommended game';//change to a real recommended game
+            html += '</td>';
+            //$(this).find('td')[3].after(html);
+            $(this).find('td').last().before(html)
+            //$(this).find("td[data-colname='email']").after(html);
+        });
+
+    });
 }
 
 function convertISODateElements(dates) {
