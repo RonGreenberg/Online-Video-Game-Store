@@ -307,7 +307,9 @@
                     }
                 }
                 $(this).removeAttr('noValidate'); // removing the noValidate attribute, now that the search is finished
-                page.find('.popup-overlay').css('display', 'none'); // hiding the popup
+
+                var popup = page.find('.popup-overlay');
+                popup.css('display', 'none'); // hiding the popup
                 popup.find('form').eq(0).find('[class="hide-on-search"]').show(); // showing elements that may have been hidden by search
             } else { // if its not search popup (it might be create popup or edit popup)
                 // var allFilled = true; // check if all inputs are filled
