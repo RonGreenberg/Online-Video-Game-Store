@@ -23,6 +23,15 @@
 
         <!-- Sidebar -->
         <aside class="sidebar">
+            <canvas id="pacmania" width="80" height="80"></canvas>
+            <script>
+                let context = document.getElementById("pacmania").getContext("2d");
+                context.beginPath();
+                context.arc(40, 40, 40, 0.2 * Math.PI, 1.8 * Math.PI);
+                context.lineTo(40, 40);
+                context.fillStyle = "yellow";
+                context.fill();
+            </script>
             <h2>Colman Games</h2>
             <ul>
                 <li><a href="#dashboard"><i class="fa fa-bar-chart fa-lg"></i>Dashboard</a></li>

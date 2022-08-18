@@ -38,6 +38,11 @@ footer {
     padding: 10px 0px 10px; /* top, right&left, bottom */
 }
 
+.sidebar canvas{
+    padding-left: 70px;
+    padding-top: 20px;
+}
+
 .sidebar h2 {
     padding-left: 15px;
     font-family: myFontFamily;
