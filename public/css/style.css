@@ -127,8 +127,8 @@ table {
     width: 20%;
 }
 
-input {
-    display: block; /* in order to have each input field and labels on separate lines */
+input:not([type=checkbox]) {
+    display: block; /* in order to have each input field and labels on separate lines (only exception is checkboxes) */
 }
 
 

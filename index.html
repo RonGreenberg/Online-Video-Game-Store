@@ -46,7 +46,7 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="gameID">ID</label>
-                            <input type="text" name="gameID" id="gameID" required />
+                            <input type="text" name="gameID" id="gameID" class="primary-key" required />
                             <label for="gameName">Name</label>
                             <input type="text" name="gameName" id="gameName" required />
                             <label for="description">Description</label>
@@ -68,7 +68,10 @@
                             <label for="image" class="hide-on-search">Upload Image:</label>
                             <input type="file" accept="image/*" name="image" id="image" class="hide-on-search" />
                             <label for="trailer" class="hide-on-search">Upload Trailer:</label>
-                            <input type="file" accept=".mp4" name="trailer" id="trailer" class="hide-on-search" />
+                            <input type="file" accept=".mp4" name="trailer" id="trailer" class="hide-on-search" /><br>
+                            <!-- By default, checkbox data is only sent if it is checked, and contains "on" in that case -->
+                            <input type="checkbox" name="publishOnTwitter" id="publishOnTwitter" class="hide-on-search hide-on-edit" />
+                            <label for="publishOnTwitter" class="hide-on-search hide-on-edit">Publish on Twitter</label><br>
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
                         </form>
@@ -107,7 +110,7 @@
                     <div class="popup-content">
                         <form method="post">
                             <label for="customerID">ID</label>
-                            <input type="text" name="customerID" id="customerID" required />
+                            <input type="text" name="customerID" id="customerID" class="primary-key" required />
                             <label for="customerName">Name</label>
                             <input type="text" name="customerName" id="customerName" required />
                             <label for="address">Address</label>
@@ -140,14 +143,14 @@
                 <div class="popup-overlay">
                     <div class="popup-content">
                         <form method="post">
-                            <label for="orderNumber">Order number</label>
-                            <input type="text" name="orderNumber" id="orderNumber" required />
+                            <label for="orderNumber">Order Number</label>
+                            <input type="number" name="orderNumber" id="orderNumber" class="primary-key" required />
                             <label for="customerID">Customer ID</label>
                             <input type="text" name="customerID" id="customerID" required />
-                            <label for="paymentMethod">Payment method</label>
+                            <label for="paymentMethod">Payment Method</label>
                             <input type="text" name="paymentMethod" id="paymentMethod" required />
-                            <label for="orderDate">Order date</label>
-                            <input type="date" name="orderDate" id="orderDate" value="today(js will change this)" min="2017-04-01" max="today(js will change this)" required />
+                            <label for="orderDate">Order Date</label>
+                            <input type="date" name="orderDate" id="orderDate" required />
 
                             <button type="button" class="btn-cancel">Cancel</button>
                             <button type="submit">Confirm</button>
@@ -158,10 +161,10 @@
                 <table class="table table-hover table-expandable">
                     <thead>
                         <tr>
-                            <th>Order number</th>
+                            <th>Order Number</th>
                             <th>Customer ID</th>
-                            <th>Payment method</th>
-                            <th>Order date</th>
+                            <th>Payment Method</th>
+                            <th>Order Date</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -206,6 +209,7 @@
             $(popup.find('button')[1]).html("Add"); // change the name of the button
             popup.css('display', 'block'); // displaying the popup
             popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
+            popup.find('form input[type="date"]').val(new Date().toISOString().split('T')[0]); // using today's date as default for input fields (must be formatted as yyyy-mm-dd when setting)
         });
 
         // event handler for clicking Search buttons (Search buttons in all pages should use this class)
@@ -214,7 +218,7 @@
             $(popup.find('button')[1]).html("Search"); // change the name of the button
             popup.css('display', 'block'); // displaying the popup
 
-            popup.find('form').eq(0).find('[class="hide-on-search"]').hide(); // hiding elements that should be hidden when searching (currently image and video upload in Games form)
+            popup.find('form').eq(0).find('.hide-on-search').hide(); // hiding elements that should be hidden when searching (currently image and video upload in Games form)
             popup.find('form')[0].reset();
             /* Since we want to allow filling only some of the fields when searching, we can temporarily turn on the novalidate property of the form
              * so that it doesn't check for required inputs.
@@ -230,9 +234,10 @@
         $('.btn-cancel').click(function() {
             var popup = $(this).closest('.page').find('.popup-overlay');
             popup.css('display', 'none'); // hiding the popup
-            popup.find('form').eq(0).find('[class="hide-on-search"]').show(); // showing elements that may have been hidden by search
+            popup.find('form').eq(0).find('.hide-on-search, .hide-on-edit').show(); // showing elements that may have been hidden by search or edit
             popup.find('form')[0].removeAttribute("data-id"); // removing the data-id attribute in case we cancel an edit (there's no problem to remove it if it doesn't exist)
             popup.find('form')[0].removeAttribute('noValidate'); // removing the noValidate attribute, added in case we have clicked search button
+            popup.find('input[class="primary-key"]').prop("disabled", false); // enabling the primary key input field that might have been disabled as a result of editing
         });
 
         /* Event handler for clicking an Edit button. Note that we can't use $(".btn-edit").click(...), because it will bind the event only to the
@@ -250,7 +255,10 @@
 
             // when submitting the form, we also need to send the id of the object to update. So we store it as an attribute of the form just like we did inside the Edit button.
             popup.find('form')[0].setAttribute('data-id', $(this).attr('data-id'));
+
             $(popup.find('button')[1]).html("Edit"); // change the name of the button
+            popup.find('input[class="primary-key"]').prop("disabled", true); // disabling the primary key field, so that the user doesn't modify it when editing
+            popup.find('form').eq(0).find('.hide-on-edit').hide(); // hiding elements that should be hidden when editing
             popup.css('display', 'block'); // displaying the popup
         });
 
@@ -310,20 +318,7 @@
 
                 var popup = page.find('.popup-overlay');
                 popup.css('display', 'none'); // hiding the popup
-                popup.find('form').eq(0).find('[class="hide-on-search"]').show(); // showing elements that may have been hidden by search
             } else { // if its not search popup (it might be create popup or edit popup)
-                // var allFilled = true; // check if all inputs are filled
-                // var requiredFields = $(this).find('input[required]');
-                // requiredFields.each(function() {
-                //     if ($(this).val() == '') {
-                //         allFilled = false;
-                //     }
-                // });
-                // if (!allFilled) { // if not all inputs are filled, give alert, then return
-                //     alert("Not all fields are filled.");
-                //     return;
-                // }
-
                 var route;
                 if ($(this).attr("data-id")) { // if the form contains a data-id attribute, it means we got here as a result of editing
                     route = 'update?collection=' + collection + "&id=" + $(this).attr("data-id");
@@ -339,13 +334,19 @@
                     processData: false, // must be set to false so that the FormData will not be processed and transformed into a query string, which would fail
                     contentType: false, // forcing jQuery not to add a Content-Type header to the HTTP request, which would mess up the structure of our multipart/form-data request
                     success: function(data) {
-                        // if the request is successful, hide the popup and render the updated page
-                        page.find('.popup-overlay').css('display', 'none');
-                        renderPage(collection);
+                        page.find('.popup-overlay').css('display', 'none'); // hiding the popup
+                        renderPage(collection); // rendering the updated page
+                    },
+                    statusCode: { // defining functions to execute when specific status codes are received (the success function executes as usual)
+                        422: function(response) { // 422 is currently returned in case of a duplicate "primary key"
+                            alert(response.responseText); // displaying the error message
+                        }
                     }
                 });
             }
             
+            page.find('input[class="primary-key"]').prop("disabled", false); // enabling the primary key input field that might have been disabled as a result of editing
+            page.find('.hide-on-search, .hide-on-edit').show(); // showing elements that may have been hidden by edit or search
             $(this).removeAttr("data-id"); // removing the data-id attribute, as the operation is finished
         });
 
