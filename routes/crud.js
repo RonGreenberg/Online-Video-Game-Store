@@ -1,5 +1,6 @@
 const mongoDb = require('../db'); // db.js
 const ObjectId = require('mongodb').ObjectId; // we must use ObjectId to filter by _id
+const twitterClient = require("../twitterClient.js");
 
 // connecting to the database and storing the connection object
 var dbo;
@@ -22,6 +23,14 @@ exports.create = (req, res) => {
     dbo.collection(req.query.collection).insertOne(req.body, function(err, result) {
         if (err) throw err;
         res.send("1 document inserted"); // we must send some response, otherwise the page would not load
+        if(req.query.collection == "games")
+        {
+            var msg = "New Game released! \n" + req.body.gameName + " is now available on " + req.body.platform + ".\nCheck it out!";
+            if(req.body.image)
+                twitterClient.tweetWithImage(msg, req.body.image);
+            else
+                twitterClient.tweet(msg);
+        }
     });
 };
 

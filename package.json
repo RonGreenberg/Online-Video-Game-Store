@@ -5,6 +5,7 @@
     "express-fileupload": "^1.4.0",
     "http": "^0.0.1-security",
     "mongodb": "^4.8.1",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.5.1",
+    "twitter-api-v2": "^1.12.5"
   }
 }
