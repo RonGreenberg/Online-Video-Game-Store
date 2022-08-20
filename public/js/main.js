@@ -59,8 +59,17 @@ function renderCustomers() {
     readAndFillTable($("#customers"), "customers", undefined, undefined, [], function(){
 
         $("#customers").find("table tbody tr").each(function(){
+            //finding the game
+            var tr = $(this);
+            $("#orders").find("table tbody tr").each(function(i) {
+                if((i%2==0) && ($(this).find("td[data-colname='customerID']") == tr.find("td[data-colname='customerID']"))){
+                    var rg = $("#orders").find("table tbody tr").eq(i+1).find('h5').innerHTML.split.pop;
+                }
+            });
+
+
             html = '<td data-colname="recommendedGame">';
-            html += 'recommended game';//change to a real recommended game
+            html += rg;//change to a real recommended game
             html += '</td>';
             //$(this).find('td')[3].after(html);
             $(this).find('td').last().before(html)
