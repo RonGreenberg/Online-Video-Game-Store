@@ -1,6 +1,9 @@
 table {
+	margin: 30px;
+    font-size: 12pt;
 	border-collapse: collapse;
 }
+
 table td {
 	padding: 15px;
 }
@@ -17,13 +20,32 @@ table thead th {
     font-weight: normal;
 	border: 1px solid #54585d;
 }
+
 table tbody td {
 	color: #636363;
 	border: 1px solid #dddfe1;
 }
+
 table tbody tr {
 	background-color: #f9fafb;
 }
+
 table tbody tr:nth-child(odd) {
 	background-color: #ffffff;
+}
+
+table.table-expandable > tbody > tr:nth-child(odd) {
+    cursor: pointer;
+}
+
+table.table-expandable.table-hover > tbody > tr:nth-child(even):hover tsd {
+    background-color: white;
+}
+
+table.table-expandable > tbody > tr div.table-expandable-arrow {
+    background:transparent url(../assets/images/arrows.png) no-repeat scroll 0px -16px; width:16px; height:16px; display:block;
+}
+
+table.table-expandable > tbody > tr div.table-expandable-arrow.up {
+    background-position:0px 0px;
 }

@@ -1,0 +1,32 @@
+#map { 
+    margin-left: 30px;
+    height: 500px;
+    width: 700px;
+}
+
+#wrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
+}
+
+.fa-github, .fa-twitter {
+    text-decoration: none;
+    display: block;
+    width: 42px;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+
+.fa-github {
+    background-color: black;
+    color: white;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.fa-twitter {
+    background-color: #55ACEE;
+    color: white;
+}
