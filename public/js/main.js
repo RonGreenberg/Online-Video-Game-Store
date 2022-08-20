@@ -56,7 +56,18 @@ function renderAbout() {
 
 function renderCustomers() {
     // filling the page with the contents of the customers collection
-    readAndFillTable($("#customers"), "customers");
+    readAndFillTable($("#customers"), "customers", undefined, undefined, [], function(){
+
+        $("#customers").find("table tbody tr").each(function(){
+            html = '<td data-colname="recommendedGame">';
+            html += 'recommended game';//change to a real recommended game
+            html += '</td>';
+            //$(this).find('td')[3].after(html);
+            $(this).find('td').last().before(html)
+            //$(this).find("td[data-colname='email']").after(html);
+        });
+
+    });
 }
 
 function convertISODateElements(dates) {
@@ -75,17 +86,13 @@ function renderGames() {
     readAndFillTable($("#games"), "games", undefined, undefined, ["image", "trailer"], function(data) {
         var releaseDates = $("#games").find("table td[data-colname='releaseDate']"); // finding the relevant table cells, identified by the colname
         convertISODateElements(releaseDates);
-
-        // // formatting prices with dollar sign
-        // var unitPrices = $("#games").find("table td[data-colname='unitPrice']");
-        // for (var i = 0; i < unitPrices.length; i++) {
-        //     unitPrices[i].innerHTML = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(unitPrices[i].innerHTML);
-        // }
         
         // iterating over the table rows, and adding a cell with the respective game image at the beginning of each row
         $("#games").find("table tbody tr").each(function(index) {
+            // a script that runs in case there was an error loading the image from the server (either the file doesn't exist or no image was assigned to this game), and loads a default image instead
+            var onerror = 'this.src = "public/assets/games_media/images/No_Image_Available.jpg"';
             // using position: relative so that the play button can be placed exactly over the image later
-            $(this).prepend("<td style='position: relative;'><img src='" + data[index]["image"] + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
+            $(this).prepend("<td style='position: relative;'><img src='" + data[index]["image"] + "' onerror='" + onerror + "' width='150' height='150'></td>"); // taking the image source path from the data returned from MongoDB
         });
 
         // adding a play button on top of each image
