@@ -1,0 +1,64 @@
+/* This is a rule that declares a custom font family based on a font file, which we can use later. */
+@font-face {
+    font-family: myFontFamily;
+    src: url('../assets/fonts/BebasNeue-Regular.ttf'); /* this file will be transferred to the client's browser when loading the page */
+}
+
+.sidebar {
+    background: #f2f2f2;
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+    padding: 10px 0px 10px; /* top, right&left, bottom */
+}
+
+.sidebar canvas {
+    padding-left: 70px;
+    padding-top: 20px;
+}
+
+.sidebar h2 {
+    padding-left: 15px;
+    font-family: myFontFamily; /* using the custom font family we created */
+    font-weight: bold;
+    font-size: 25pt;
+    text-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+    letter-spacing: 2px;
+}
+
+.sidebar ul {
+    padding: 0px; /* applies to all four sides */
+}
+
+.sidebar ul li {
+    list-style: none; /* to remove bullets */
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+    border-radius: 10px; /* results in rounded corners */
+    transition: 0.4s; /* results in a fading animation when hovering over sidebar options or selecting one */
+}
+
+.sidebar ul li a {
+    color: black;
+    text-decoration: none; /* to remove underlines from links (anchor tags) */
+    display: block; /* to make entire space clickable, not just the text */
+    padding: 15px;
+}
+
+.sidebar ul li a .fa {
+    width: 30px; /* to distance the icons from the text */
+}
+
+/* changing background color of sidebar buttons that are not currently selected (active), when hovering on them */
+.sidebar ul li:hover:not(.active) {
+    background-color: lightgray;
+}
+
+/* making the text bold when hovering on it */
+.sidebar ul li:hover a {
+    font-weight: bold;
+}
+
+/* This class will be applied to one li element at a time from the sidebar - the one that is currently selected. */
+.active {
+    background-color:lightskyblue;
+}

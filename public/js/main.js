@@ -132,8 +132,8 @@ function renderOrders() {
             var table = $(this);
             table.children('tbody').children('tr').filter(':odd').hide(); // hiding the odd rows (those that contain the game details)
             table.children('tbody').children('tr').filter(':even').on("click", function(event) {
-                // expanding the row only if a table cell itself was clicked, otherwise it would also expand when clicking on edit/delete
-                if ($(event.target).is('td')) {
+                // expanding the row only if the clicked element is not a button (edit/delete)
+                if (!$(event.target).is('button')) {
                     var element = $(this);
                     element.next('tr').toggle('fast');
                     element.find(".table-expandable-arrow").toggleClass("up");
@@ -208,9 +208,3 @@ function readAndFillTable(page, collection, withEditBtn = true, withDeleteBtn = 
         }
     });   
 }
-
-// var today = new Date();
-// var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-// $("#orderDate").setAttribute("value", date);
-// $("#orderDate").setAttribute("max", date);
-
