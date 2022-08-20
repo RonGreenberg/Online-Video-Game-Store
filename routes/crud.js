@@ -18,6 +18,65 @@ exports.read = (req, res) => {
     });
 };
 
+exports.rg = (req, res) => {
+    dbo.collection("orders").find().toArray(function(err, orders) {
+        dbo.collection("games").find().toArray(function(err, games) {
+        
+            if (err) throw err;
+            var exampleGameID;
+            var exampleGameGenere;
+            var exampleGamePlatform;
+
+            var same = '';//similar game
+            var id = req.query.id;
+
+            //finding exampleGameID
+            for(var i = 0; i < orders.length; i++){
+                if(orders[i]['customerID'] == id){
+                    exampleGameID = orders[i]['games'][0]['gameID'];
+                    break;
+                }
+            }
+            //finding exampleGameGenere and exampleGamePlatform
+            for(var i = 0; i < games.length; i++){
+                if(games[i]['gameID'] == exampleGameID){
+                    exampleGameGenere = games[i]['genere'];
+                    exampleGamePlatform = games[i]['platform'];
+                    break;
+                }
+            }
+            //finding most similar game
+            var sameP = '';
+            var sameG = '';
+            var rand = 'no games to offer';
+            for(var i = 0; i < games.length; i++){
+                if(games[i]['gameID'] != id){
+                    if(games[i]['genere'] == exampleGameGenere && games[i]['platform'] == exampleGamePlatform){
+                        same = games[i]['gameName'];
+                        break;
+                    }
+                    if(games[i]['platform'] == exampleGamePlatform)
+                        sameP = games[i]['gameName'];
+                    else if(games[i]['genere'] == exampleGameGenere)
+                        sameG = games[i]['gameName'];
+                    else
+                        rand = games[i]['gameName'];
+                }
+            }
+            //sim = exampleGameID;
+            if(same != '')
+                res.send(same);
+            else if(sameP != '')
+                res.send(sameP);
+            else if(sameG != '')
+                res.send(sameG);
+            else
+                res.send(rand);
+
+        });
+    });
+};
+
 exports.create = (req, res) => {
     /* Thanks to the body-parser module, we can access req.body which contains a plain object that is structured in the exact format we need to pass to
      * MongoDB in insertOne(). But there is a little thing to do first. This is called a destructuring assignment - if req.body contains a field named
