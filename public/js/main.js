@@ -50,8 +50,12 @@ function renderPage(page) {
 }
 
 function renderAbout() {
-    // filling the page with the contents of the developers collection (eventually, would become a map with markers)
-    readAndFillTable($("#about"), "developers", false, false);
+    // filling the table with the contents of the developers collection and loading the map
+    if ($("#about tbody").html() == "") { // so that we load the whole About page only once
+        readAndFillTable($("#about"), "developers", false, false, ["latitude", "longitude", "image"], function(data) {
+            loadMap(data); // passing the data (which contains the coordinates and details to show in popups) to the loadMap function
+        });
+    }
 }
 
 function renderCustomers() {
