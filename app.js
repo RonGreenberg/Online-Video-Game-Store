@@ -19,6 +19,7 @@ app.use(fileUpload());
 
 // assigning functions exported from crud.js to designated routes
 app.get('/read', crud.read);
+app.get('/rg', crud.rg);
 
 /* We can pass multiple functions, called middlewares, to get/post handlers. Each of these functions has access to req, res and the next middleware
  * function in the application's request-response cycle. Each function can decide when to call the next one. In our case, we need to provide support

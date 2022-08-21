@@ -63,12 +63,18 @@ function renderCustomers() {
     readAndFillTable($("#customers"), "customers", undefined, undefined, [], function(){
 
         $("#customers").find("table tbody tr").each(function(){
-            html = '<td data-colname="recommendedGame">';
-            html += 'recommended game';//change to a real recommended game
-            html += '</td>';
-            //$(this).find('td')[3].after(html);
-            $(this).find('td').last().before(html)
-            //$(this).find("td[data-colname='email']").after(html);
+            //finding the game
+            var tr = $(this);
+            $.get('rg?id=' + $(this).find("td[data-colname='customerID']").html() , function(data, status) {
+                html = '<td data-colname="recommendedGame">';
+                html += data;//change to a real recommended game
+                html += '</td>';
+                //$(this).find('td')[3].after(html);
+                tr.find('td').last().before(html);
+                //$(this).find("td[data-colname='email']").after(html);
+        });
+
+            
         });
 
     });
