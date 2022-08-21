@@ -88,3 +88,7 @@ video {
     font-family: 'Courier New', Courier, monospace;
     font-size: 11pt;
 }
+
+.recommendedGame img {
+    padding-top: 10px;
+}

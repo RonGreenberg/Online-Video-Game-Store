@@ -2,11 +2,8 @@ const mongoDb = require('../config/db'); // db.js
 const ObjectId = require('mongodb').ObjectId; // we must use ObjectId to filter by _id
 const twitterClient = require("../config/twitterClient.js");
 
-// connecting to the database and storing the connection object
-var dbo;
-mongoDb.connectToDb(function(dbConnection) {
-    dbo = dbConnection;
-});
+// getting the db connection object (possible since this file is required and loaded only when the connection is ready)
+var dbo = mongoDb.getDb();
 
 // exporting CRUD functions
 
@@ -15,65 +12,6 @@ exports.read = (req, res) => {
     dbo.collection(req.query.collection).find().toArray(function(err, result) {
         if (err) throw err;
         res.send(result);
-    });
-};
-
-exports.rg = (req, res) => {
-    dbo.collection("orders").find().toArray(function(err, orders) {
-        dbo.collection("games").find().toArray(function(err, games) {
-        
-            if (err) throw err;
-            var exampleGameID;
-            var exampleGameGenere;
-            var exampleGamePlatform;
-
-            var same = '';//similar game
-            var id = req.query.id;
-
-            //finding exampleGameID
-            for(var i = 0; i < orders.length; i++){
-                if(orders[i]['customerID'] == id){
-                    exampleGameID = orders[i]['games'][0]['gameID'];
-                    break;
-                }
-            }
-            //finding exampleGameGenere and exampleGamePlatform
-            for(var i = 0; i < games.length; i++){
-                if(games[i]['gameID'] == exampleGameID){
-                    exampleGameGenere = games[i]['genere'];
-                    exampleGamePlatform = games[i]['platform'];
-                    break;
-                }
-            }
-            //finding most similar game
-            var sameP = '';
-            var sameG = '';
-            var rand = 'no games to offer';
-            for(var i = 0; i < games.length; i++){
-                if(games[i]['gameID'] != id){
-                    if(games[i]['genere'] == exampleGameGenere && games[i]['platform'] == exampleGamePlatform){
-                        same = games[i]['gameName'];
-                        break;
-                    }
-                    if(games[i]['platform'] == exampleGamePlatform)
-                        sameP = games[i]['gameName'];
-                    else if(games[i]['genere'] == exampleGameGenere)
-                        sameG = games[i]['gameName'];
-                    else
-                        rand = games[i]['gameName'];
-                }
-            }
-            //sim = exampleGameID;
-            if(same != '')
-                res.send(same);
-            else if(sameP != '')
-                res.send(sameP);
-            else if(sameG != '')
-                res.send(sameG);
-            else
-                res.send(rand);
-
-        });
     });
 };
 

@@ -60,23 +60,18 @@ function renderAbout() {
 
 function renderCustomers() {
     // filling the page with the contents of the customers collection
-    readAndFillTable($("#customers"), "customers", undefined, undefined, [], function(){
-
-        $("#customers").find("table tbody tr").each(function(){
-            //finding the game
-            var tr = $(this);
-            $.get('rg?id=' + $(this).find("td[data-colname='customerID']").html() , function(data, status) {
-                html = '<td data-colname="recommendedGame">';
-                html += data;//change to a real recommended game
-                html += '</td>';
-                //$(this).find('td')[3].after(html);
-                tr.find('td').last().before(html);
-                //$(this).find("td[data-colname='email']").after(html);
+    readAndFillTable($("#customers"), "customers", undefined, undefined, undefined, function() {
+        // sending a request to get the recommended game for each customer
+        $.get('rg', function(recommendations, status) {
+            // iterating over the table rows
+            $("#customers").find("table tbody tr").each(function() {
+                var customerID = $(this).find("td[data-colname='customerID'").html();
+                var game = recommendations.find(recommendation => recommendation.customerID == customerID).recommendedGame; // finding the recommended game for the current customer
+                var text = game.gameName + " for " + game.platform;
+                var img = "<img src='" + game.image + "' width='40' height='40'>";
+                $(this).find('td').last().before("<td align='center' class='recommendedGame'>" + img + "<br>" + text + "</td>"); // adding the table cell before the last column of action buttons
+            });
         });
-
-            
-        });
-
     });
 }
 

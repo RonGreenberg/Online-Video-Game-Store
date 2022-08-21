@@ -29,10 +29,15 @@ module.exports =  {
             createUniqueIndex(dbConnection, "customers", "customerID", function() {
                 createUniqueIndex(dbConnection, "games", "gameID", function() {
                     createUniqueIndex(dbConnection, "orders", "orderNumber", function() {
-                        callback(dbConnection); // the only way to pass the created connection out of this scope is using a callback
+                        callback(); // executing the passed callback function (which in our case, starts the server) only after completing the process
                     });
                 });
             });
         });
+    },
+
+    // exporting a function to get the db connection object
+    getDb: function() {
+        return dbConnection;
     }
 };
