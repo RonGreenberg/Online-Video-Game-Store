@@ -67,9 +67,16 @@ function renderCustomers() {
             $("#customers").find("table tbody tr").each(function() {
                 var customerID = $(this).find("td[data-colname='customerID'").html();
                 var game = recommendations.find(recommendation => recommendation.customerID == customerID).recommendedGame; // finding the recommended game for the current customer
-                var text = game.gameName + " for " + game.platform;
-                var img = "<img src='" + game.image + "' width='40' height='40'>";
-                $(this).find('td').last().before("<td align='center' class='recommendedGame'>" + img + "<br>" + text + "</td>"); // adding the table cell before the last column of action buttons
+                var html;
+                if (!game) { // there is no game to recommend
+                    html = "Purchased all games";
+                } else {
+                    var text = game.gameName + " for " + game.platform;
+                    var img = "<img src='" + game.image + "' width='40' height='40'>";
+                    html = img + "<br>" + text;
+                }
+                
+                $(this).find('td').last().before("<td align='center' class='recommendedGame'>" + html + "</td>"); // adding the table cell before the last column of action buttons
             });
         });
     });
