@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colman Games</title>
@@ -49,6 +50,7 @@
                 <h1>Dashboard</h1>
                 <h3>Server Info:</h3>
                 <h4 id="serverInfo"></h4>
+                <div id="chart_d3"></div>
             </div>
 
             <div class="page" id="games" style="display: none;">
@@ -229,5 +231,8 @@
     <script src="public/js/map.js"></script>
     <script src="public/js/main.js"></script>
     <script src="public/js/eventHandlers.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="public/js/dashboardCharts.js"></script>
 </body>
 </html>
