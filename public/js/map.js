@@ -15,10 +15,6 @@ function loadMap(data) {
         marker.bindPopup("<img src='" + row["image"] + "' width='100'><br>" + "<b>" + row["name"] + "</b><br>" + row["email"], { closeButton: false });
         attachMarkerEvents(marker); // calling a function so that the event handlers won't share the same marker variable (https://stackoverflow.com/a/6487376)
     }
-
-    // map.on('move', function() {
-    //     $("#test").html(map.getCenter().toString() + ", " + map.getZoom());
-    // });
 }
 
 function attachMarkerEvents(marker) {

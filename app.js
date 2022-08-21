@@ -1,10 +1,14 @@
 const express = require('express');
 const app = express();
+const socket = require('socket.io');
+const os = require('os'); // provides operating system-related utility methods, used to send info about the server to clients
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
+
 const crud = require('./routes/crud'); // crud.js
 const gamesMedia = require('./routes/gamesMedia'); // gamesMedia.js
 
+// serving static files
 app.use(express.static(__dirname));
 
 // enables parsing of application/x-www-form-urlencoded data received in a post request, meaning data formatted like: MyVariableOne=ValueOne&MyVariableTwo=ValueTwo... (practically only used for delete)
@@ -25,9 +29,34 @@ app.get('/read', crud.read);
  */
 app.post('/create', gamesMedia.upload, crud.create);
 app.post('/update', gamesMedia.upload, crud.update);
-
 app.post('/delete', crud.delete);
 
-app.listen(8080, () => {
+// listen() returns the created HTTP server
+const server = app.listen(8080, () => {
     console.log('server listening on port 8080');
 });
+
+// socket setup
+const io = socket(server);
+
+/* Defining a route that upon receiving a GET request, sends a notification to all connected clients to refresh their pages, due to updates made on the
+ * server. In the helpers folder we have two batchfiles that perform a change in the server files (specifically, overwrite the file of the banner image),
+ * then immediately send a GET request to this route using the wget utility.
+ */
+app.get('/serverUpdate', function(req, res) {
+    io.emit('refresh_page');
+    res.send('Successfully notified about change');
+});
+
+// listens for incoming new socket connections
+io.on('connection', function(socket) {
+    io.emit('update_info', getInfo()); // sending information about the server to all clients, thus updating the client count (calling a function so that the info is up-to-date)
+    socket.on('disconnect', function() {
+        io.emit('update_info', getInfo()); // doing the same thing whenever this client (or any other one) disconnects
+    });
+});
+
+// this function returns an object containing info about the server OS, CPU, Uptime and number of currently connected clients
+function getInfo() {
+    return { osType: os.type(), cpu: os.cpus()[0].model, uptime: os.uptime(), clientsCount: io.engine.clientsCount };
+}

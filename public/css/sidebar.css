@@ -12,12 +12,13 @@
 }
 
 .sidebar canvas {
-    padding-left: 70px;
-    padding-top: 20px;
+    padding-left: 10px;
+    padding-top: 10px;
 }
 
 .sidebar h2 {
-    padding-left: 15px;
+    margin-top: 5px;
+    padding-left: 38px;
     font-family: myFontFamily; /* using the custom font family we created */
     font-weight: bold;
     font-size: 25pt;

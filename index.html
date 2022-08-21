@@ -25,13 +25,13 @@
 </head>
 <body>
     <div class="container">
-        <!-- header is empty, but the CSS creates a background image in it -->
         <header>
+            <img src="public/assets/images/default_coursesummary.jpg">
         </header>
 
         <!-- Sidebar -->
         <aside class="sidebar">
-            <canvas id="pacmania" width="80" height="80"></canvas>
+            <canvas id="logo" width="240" height="120"></canvas>
             <h2>Colman Games</h2>
             <ul>
                 <li><a href="#dashboard"><i class="fa fa-bar-chart fa-lg"></i>Dashboard</a></li>
@@ -45,7 +45,11 @@
         <section>
             <!-- All pages initially hidden -->
 
-            <div class="page" id="dashboard" style="display: none;"><h1>Dashboard</h1></div>
+            <div class="page" id="dashboard" style="display: none;">
+                <h1>Dashboard</h1>
+                <h3>Server Info:</h3>
+                <h4 id="serverInfo"></h4>
+            </div>
 
             <div class="page" id="games" style="display: none;">
                 <button class="btn-add-new">Add New</button>
@@ -210,6 +214,23 @@
 
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+        // (function() {
+        //     // Replace with the URL of your CSS style sheet
+        //     const href = 'public/css/style.css';
+        //     const head = document.getElementsByTagName('head')[0];
+        //     // Leave the rest of the code as-is
+        //     const link = document.createElement('link');
+        //     const cacheBuster = Math.round(new Date().getTime() / 1000);
+        //     link.setAttribute('href', href + '?cb=' + cacheBuster);
+        //     link.setAttribute('rel','stylesheet');
+        //     head.appendChild(link);
+        // })();
+    </script>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
     
     <!-- Leaflet JS (for map) -->
     <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
@@ -218,6 +239,7 @@
 
     <!-- Local JS files -->
     <script src="public/js/canvasLogo.js"></script>
+    <script src="public/js/websockets.js"></script>
     <script src="public/js/map.js"></script>
     <script src="public/js/main.js"></script>
     <script src="public/js/eventHandlers.js"></script>
