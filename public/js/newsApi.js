@@ -1,20 +1,22 @@
-function retrieve(){
-    const apiKey = "203e6ef0c1154967a6dae680bca5f1cf";
-    var date = new Date();
-    date.setMonth(date.getMonth() - 1);
-    let url = 'https://newsapi.org/v2/everything?q=gaming&from=' + date.toISOString().split('T')[0] + '&apiKey=' + apiKey;
-    
-    $.get(url, function(data){
-        const newsList = $('.news-list');
+function retrieve() {
+    const apiKey = config.NEWS_API_KEY;
 
-        console.log(data);
-        let articles = data.articles;
-        let news = [];
-        for(let i = 0; i < Math.min(articles.length, 25); i++){
-            newsList.append('<li><a href="' + articles[i].url + '">' + articles[i].title + '</a></li>');
+    var date = new Date();
+    date.setMonth(date.getMonth() - 1); // retrieving news starting from one month ago
+    // specifying "gaming" in the query, taking only English articles and sorting by newest
+    var url = 'https://newsapi.org/v2/everything?q=gaming&from=' + date.toISOString().split('T')[0] + '&sortBy=publishedAt&language=en&apiKey=' + apiKey;
+    
+    // sending the AJAX GET request
+    $.get(url, function(data) {
+        const newsList = $('.news-list'); // element in which we put the links to the articles
+
+        var articles = data.articles;
+        for (var i = 0; i < Math.min(articles.length, 100); i++) { // limiting to 25 articles
+            var publishingDate = articles[i].publishedAt.split('T')[0]; // converting from ISO format
+            // adding a list item with a link to the article (opens in new tab)
+            newsList.append('<li>[' + publishingDate + '] <a href="' + articles[i].url + '" target="_blank">' + articles[i].title + '</a></li>');
         }
-        console.log(news);
-        return news;
-    })
+    });
 }
-retrieve();
+
+retrieve(); // calling the function once

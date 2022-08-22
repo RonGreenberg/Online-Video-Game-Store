@@ -2,3 +2,17 @@
     display: flex;
     flex-direction: row;
 }
+
+#piechart {
+    padding-left: 70px; /* some space from the linechart */
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+}
+
+/* each point on the linechart */
+.circle {
+    fill: steelblue;
+}

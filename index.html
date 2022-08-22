@@ -48,16 +48,18 @@
             <!-- All pages initially hidden -->
 
             <div class="page" id="dashboard" style="display: none;">
-                <h1>Dashboard</h1>
-                <h3>Server Info:</h3>
+                <h2><b>Server Info</b></h2>
                 <h4 id="serverInfo"></h4>
+                <hr> <!-- creates a separator line -->
                 <div id="charts">
                     <div id="linechart"></div>
                     <div id="piechart"></div>
                     <div id="legend"></div>
                 </div>
-                <div id="news_api"><h3>Gaming Related News</h3>
-                <ul class="news-list"></ul></div>
+                <h3><b>Gaming Related News:</b></h3>
+                <div id="news_api">
+                    <ul class="news-list"></ul>
+                </div>
             </div>
 
             <div class="page" id="games" style="display: none;">
@@ -235,15 +237,18 @@
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
 
+    <!-- D3.JS (for dashboard graphs) -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
     <!-- Local JS files -->
     <script src="public/js/canvasLogo.js"></script>
     <script src="public/js/websockets.js"></script>
-    <script src="public/js/map.js"></script>
+    <script src="public/js/dashboardCharts.js"></script> <!-- must come before main.js, because the latter calls piechart(), linechart() -->
+    <script src="public/js/map.js"></script> <!-- must come before main.js, because the latter calls loadMap() -->
     <script src="public/js/main.js"></script>
     <script src="public/js/eventHandlers.js"></script>
-    <script src="https://d3js.org/d3.v4.js"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <script src="public/js/dashboardCharts.js"></script>
+    <script src="public/js/config.js"></script>
     <script src="public/js/newsApi.js"></script>
 </body>
 </html>

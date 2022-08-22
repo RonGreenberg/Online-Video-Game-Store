@@ -46,6 +46,9 @@ function renderPage(page) {
         case "orders":
             renderOrders();
             break;
+        case "dashboard":
+            renderDashboard();
+            break;
     }
 }
 
@@ -56,6 +59,13 @@ function renderAbout() {
             loadMap(data); // passing the data (which contains the coordinates and details to show in popups) to the loadMap function
         });
     }
+}
+
+function renderDashboard() {
+    $("#charts > div").empty(); // emptying all divs inside the charts element (linechart, piechart and its legend)
+    // drawing the charts
+    piechart();
+    linechart();
 }
 
 function convertISODateElements(dates) {

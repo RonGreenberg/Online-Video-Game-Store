@@ -1,3 +1,4 @@
 node_modules
 public/assets/games_media
 .env
+config.js

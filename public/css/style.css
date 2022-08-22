@@ -86,9 +86,17 @@ video {
 
 #serverInfo {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 11pt;
+    font-size: 14pt;
 }
 
 .recommendedGame img {
     padding-top: 10px;
+}
+
+#news_api {
+    overflow-y: scroll;
+    height: 255px;
+    width: 65%;
+    border: 1px solid black;
+    margin-left: 20px;
 }
