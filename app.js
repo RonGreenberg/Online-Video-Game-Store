@@ -20,10 +20,12 @@ mongoDb.connectToDb(function() {
     // we must require the files that access the MongoDB connection only after it's established
     const crud = require('./routes/crud'); // crud.js
     const recommendedGame = require('./routes/recommendedGame'); // recommendedGame.js
+    const statistics = require('./routes/statistics'); // statistics.js
     const gamesMedia = require('./routes/gamesMedia'); // gamesMedia.js
 
-    // assigning function exported from recommendedGame.js to designated route
+    // assigning function exported from recommendedGame.js, statistics.js to designated routes
     app.get('/rg', recommendedGame.rg);
+    app.get('/statistics', statistics.statistics);
 
     // assigning CRUD functions
 

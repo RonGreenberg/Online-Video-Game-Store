@@ -58,9 +58,18 @@ function renderAbout() {
     }
 }
 
+function convertISODateElements(dates) {
+    for (var i = 0; i < dates.length; i++) {
+        dates[i].innerHTML = dates[i].innerHTML.split('T')[0]; // taking only the yyyy-mm-dd from the full ISO format, which can then be easily copied to date input field
+    }
+}
+
 function renderCustomers() {
     // filling the page with the contents of the customers collection
     readAndFillTable($("#customers"), "customers", undefined, undefined, undefined, function() {
+        var registrationDates = $("#customers").find("table td[data-colname='registrationDate']"); // finding the relevant table cells, identified by the colname
+        convertISODateElements(registrationDates);
+
         // sending a request to get the recommended game for each customer
         $.get('rg', function(recommendations, status) {
             // iterating over the table rows
@@ -80,12 +89,6 @@ function renderCustomers() {
             });
         });
     });
-}
-
-function convertISODateElements(dates) {
-    for (var i = 0; i < dates.length; i++) {
-        dates[i].innerHTML = dates[i].innerHTML.split('T')[0]; // taking only the yyyy-mm-dd from the full ISO format, which can then be easily copied to date input field
-    }
 }
 
 function renderGames() {

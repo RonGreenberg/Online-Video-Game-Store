@@ -106,7 +106,7 @@ $('form').on('submit', function(event) {
         var rows = $(this).closest('.page').find('table tbody tr'); // gets the rows
         for (var i = 0; i < rows.length; i++) {
             var cells = rows.eq(i).find('td[data-colname]'); // selecting only cells that have a data-colname attribute (not image/video for example)
-            for (var j = 0; j < cells.length - 1; j++) { // run on the columns (not including the last edit/delete column)
+            for (var j = 0; j < cells.length; j++) { // run on the columns
                 // the following check will work for dates as well since both the input fields and the table cells now use the yyyy-mm-dd format
                 if (textFields.eq(j).val() != "" &&  cells[j].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) {
                     rows[i].style.display = "none"; // row disappears if the input is not empty and not equal to the value in the table

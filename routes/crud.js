@@ -8,11 +8,21 @@ var dbo = mongoDb.getDb();
 // exporting CRUD functions
 
 exports.read = (req, res) => {
-    // returning all records from the collection given in the URL parameter
-    dbo.collection(req.query.collection).find().toArray(function(err, result) {
+    // getting indexes for the collection given in the URL parameter, that we'll use to sort the results
+    dbo.collection(req.query.collection).indexes(function(err, indexes) {
         if (err) throw err;
-        res.send(result);
-    });
+
+        var index = {};
+        if (indexes[1]) { // checking if there is an index besides _id (not in the case of developers collection)
+            index = indexes[1].key; // the key property contains { "indexName": 1 }, which sorts the documents in ascending order of that field
+        }
+
+        // returning all records from the collection given in the URL parameter, sorted using the index (primary key)
+        dbo.collection(req.query.collection).find().sort(index).toArray(function(err, result) {
+            if (err) throw err;
+            res.send(result);
+        });  
+    })
 };
 
 exports.create = (req, res) => {
