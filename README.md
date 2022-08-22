@@ -6,7 +6,8 @@ Final project in Web Application Development course at Colman, conducted by Dr. 
 
 
 The website devided to diffrent sections which we can reach through the sidebar.
-![Alt Text](public/assets/readme_assets/dashboard_showoff.gif)
+
+![alt text](public/assets/readme_assets/dashboard_showoff.gif)
 
 ## Dashboard
 In the dashboard section you can monitor information about the server like, OS, CPU, Uptime and number of clients connected - all of those are possible using Socket.io package used [here](public/js//websockets.js).
