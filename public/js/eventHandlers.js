@@ -10,6 +10,9 @@ $('.btn-add-new').on('click', function() {
     popup.css('display', 'block'); // displaying the popup
     popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
     popup.find('form input[type="date"]').val(new Date().toISOString().split('T')[0]); // using today's date as default for input fields (must be formatted as yyyy-mm-dd when setting)
+    if ($(this).closest('.page').attr('id') == "orders") {
+        addNewOrder();
+    }
 });
 
 // event handler for clicking Search buttons (Search buttons in all pages should use this class)
@@ -51,6 +54,7 @@ $(document).on("click", ".btn-edit", function() {
     for (var i = 0; i < row.length; i++) {
         // searching input fields whose id is equal to the column name we stored in the current td, and setting their text to the text from the td
         popup.find('input[id="' + row[i].dataset.colname + '"]').val(row[i].innerHTML);
+        popup.find('select[id="' + row[i].dataset.colname + '"]').val(row[i].innerHTML); // if there's no matching input field, searching for a dropdown field
     }
 
     // when submitting the form, we also need to send the id of the object to update. So we store it as an attribute of the form just like we did inside the Edit button.
@@ -79,12 +83,12 @@ $(document).on("click", ".btn-delete", function() {
 
 function displayTable(frm)
 {
-    var table = $(frm).closest('.page').find('table'); // gets the table
-    
-    for(var i = 1; i < $(table).find('tr').length; i++) // run on the rows
+    var tbody = $(frm).closest('.page').find('table tbody')[0]; // gets the table body
+    var rows = $(tbody).children('tr'); // direct children only (because in orders form we have hidden tables and rows...)
+    for(var i = 0; i < rows.length; i++) // run on the rows
     {
-        var row = $(table).find('tr')[i];
-        if(!($(row).find('td')[0].hasAttribute("colspan"))) // depends on the fact that in Orders table, rows containing game details (which should be hidden) use the colspan attribute
+        var row = rows[i];
+        if(!($(row).children('td')[0].hasAttribute("colspan"))) // depends on the fact that in Orders table, rows containing game details (which should be hidden) use the colspan attribute
             row.style.display="table-row"; // displaying the row
         else
             row.style.display="none";
@@ -98,7 +102,12 @@ $('form').on('submit', function(event) {
     var page = $(this).closest('.page');
     var collection = page.attr('id');
 
-    var textFields = $(this).find('input'); // get all input elements
+    /* Enabling the primary key input field that might have been disabled as a result of editing or ADDING NEW in orders, in which case it must not be
+     * disabled so that it can be sent to the server.
+     */
+    page.find('input[class="primary-key"]').prop("disabled", false);
+
+    var textFields = $(this).find('input, select').filter(':visible'); // get all visible input/dropdown elements
 
     displayTable($(this)); // displaying the entire table by default. in case of a blank search, no rows will be hidden
 
@@ -108,7 +117,7 @@ $('form').on('submit', function(event) {
             var cells = rows.eq(i).find('td[data-colname]'); // selecting only cells that have a data-colname attribute (not image/video for example)
             for (var j = 0; j < cells.length; j++) { // run on the columns
                 // the following check will work for dates as well since both the input fields and the table cells now use the yyyy-mm-dd format
-                if (textFields.eq(j).val() != "" &&  cells[j].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) {
+                if (textFields.eq(j).val().trim() != "" && cells[j].innerHTML.toLowerCase().indexOf(textFields.eq(j).val().toLowerCase()) <= -1) {
                     rows[i].style.display = "none"; // row disappears if the input is not empty and not equal to the value in the table
                     break;
                 }
@@ -125,7 +134,7 @@ $('form').on('submit', function(event) {
         } else { // else, we want to add a new record
             route = 'create?collection=' + collection;
         }
-        
+        console.log(new FormData(this));
         // sending an HTTP POST request to the appropriate route in the server
         $.ajax({
             method: "POST",
@@ -145,7 +154,6 @@ $('form').on('submit', function(event) {
         });
     }
     
-    page.find('input[class="primary-key"]').prop("disabled", false); // enabling the primary key input field that might have been disabled as a result of editing
     page.find('.hide-on-search, .hide-on-edit').show(); // showing elements that may have been hidden by edit or search
     $(this).removeAttr("data-id"); // removing the data-id attribute, as the operation is finished
 });

@@ -39,6 +39,10 @@ exports.create = (req, res) => {
      */
     const { publishOnTwitter, ...body } = req.body;
 
+    if (req.query.collection == "orders") {
+        body.games = [null]; // appending an empty games array, otherwise the order will not appear in the Orders page (Note: MongoDB doesn't accept an empty array without null)
+    }
+
     dbo.collection(req.query.collection).insertOne(body, function(err, result) {
         if (err) {
             // catching the error: "MongoServerError: E11000 duplicate key error collection"

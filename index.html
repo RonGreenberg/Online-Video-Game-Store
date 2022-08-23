@@ -84,11 +84,47 @@
                             <label for="releaseDate">Release Date</label>
                             <input type="date" name="releaseDate" id="releaseDate" required />
                             <label for="genre">Genre</label>
-                            <input type="text" name="genre" id="genre" required />
+                            <select name="genre" id="genre" required>
+                                <option value="" selected hidden>Choose Genre...</option> <!-- serves as placeholder, value="" overrides the option text as the actual submitted value -->
+                                <option>Action</option>
+                                <option>Adventure</option>
+                                <option>Arcade</option>
+                                <option>Cards</option>
+                                <option>Casual</option>
+                                <option>First-Person Shooter</option>
+                                <option>Platform</option>
+                                <option>Racing</option>
+                                <option>Role-Playing</option>
+                                <option>Simulation</option>
+                                <option>Strategy</option>
+                                <option>Third-Person Shooter</option>
+                                <option>Trivia</option>
+                            </select>
                             <label for="platform">Platform</label>
-                            <input type="text" name="platform" id="platform" required />
+                            <select name="platform" id="platform" required>
+                                <option value="" selected hidden>Choose Platform...</option>
+                                <option>Android</option>
+                                <option>iOS</option>
+                                <option>macOS</option>
+                                <option>Microsoft Windows</option>
+                                <option>Nintendo Switch</option>
+                                <option>Nintendo-DS</option>
+                                <option>PS3</option>
+                                <option>PS4</option>
+                                <option>PSP</option>
+                                <option>Wii</option>
+                                <option>Wii-U</option>
+                                <option>Xbox-360</option>
+                                <option>Xbox-One</option>
+                                <option>Other...</option>
+                            </select>
                             <label for="licenseType">License Type</label>
-                            <input type="text" name="licenseType" id="licenseType" required />
+                            <select name="licenseType" id="licenseType" required>
+                                <option value="" selected hidden>Choose License Type...</option>
+                                <option>Annual</option>
+                                <option>Monthly</option>
+                                <option>Perpetual</option>
+                            </select>
                             <label for="image" class="hide-on-search">Upload Image:</label>
                             <input type="file" accept="image/*" name="image" id="image" class="hide-on-search" />
                             <label for="trailer" class="hide-on-search">Upload Trailer:</label>
@@ -120,6 +156,7 @@
                             <th>Genre</th>
                             <th>Platform</th>
                             <th>License Type</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -157,6 +194,7 @@
                             <th>Email</th>
                             <th>Registration Date</th>
                             <th>Recommended Game</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -173,9 +211,16 @@
                             <label for="orderNumber">Order Number</label>
                             <input type="number" name="orderNumber" id="orderNumber" class="primary-key" required />
                             <label for="customerID">Customer ID</label>
-                            <input type="text" name="customerID" id="customerID" required />
+                            <select name="customerID" id="customerID" required>
+                                <option value="" selected hidden>Choose Customer...</option>
+                            </select>
                             <label for="paymentMethod">Payment Method</label>
-                            <input type="text" name="paymentMethod" id="paymentMethod" required />
+                            <select name="paymentMethod" id="paymentMethod" required>
+                                <option value="" selected hidden>Choose Payment Method...</option>
+                                <option>Bitcoin</option>
+                                <option>Credit Card</option>
+                                <option>PayPal</option>
+                            </select>
                             <label for="orderDate">Order Date</label>
                             <input type="date" name="orderDate" id="orderDate" required />
                             <button type="button" class="btn-cancel">Cancel</button>
@@ -191,6 +236,7 @@
                             <th>Payment Method</th>
                             <th>Order Date</th>
                             <th>Total</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -248,6 +294,7 @@
     <script src="public/js/dashboardCharts.js"></script> <!-- must come before main.js, because the latter calls piechart(), linechart() -->
     <script src="public/js/map.js"></script> <!-- must come before main.js, because the latter calls loadMap() -->
     <script src="public/js/main.js"></script>
+    <script src="public/js/ordersEvents.js"></script>
     <script src="public/js/eventHandlers.js"></script>
     <script src="public/js/config.js"></script>
     <script src="public/js/newsApi.js"></script>

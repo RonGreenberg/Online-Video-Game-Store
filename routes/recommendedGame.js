@@ -28,7 +28,7 @@ exports.rg = (req, res) => {
                         // storing all games purchased by this customer in a map, for better performance (O(1) lookup)
                         var allPurchasedGames = new Map();
                         for (var order of customerOrders) {
-                            for (var purchasedGame of order.games) {
+                            for (var purchasedGame of order.games.filter(game => game != null)) { // filtering out null games (in case of an order with no games)
                                 // mapping from game IDs to full game objects (taken from the games array, identified using the ID)
                                 allPurchasedGames.set(purchasedGame.gameID, games.find(game => game.gameID == purchasedGame.gameID));
                             }
