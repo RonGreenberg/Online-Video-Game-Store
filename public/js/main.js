@@ -137,12 +137,19 @@ function renderOrders() {
          */
         $("#orders").find("table tbody tr").each(function(i) {
             var html = '';
-            html += '<tr><td colspan="6"><h4>Games:</h4><ul>';
-            for (var j = 0; j < data[i]['games'].length; j++) {
-                html += '<li><h5>Game ID: ' + (data[i]['games'])[j]['gameID'] + '</h5> Units: ' + (data[i]['games'])[j]['numberOfUnits']+ '</li>';
+            html += '<tr><td colspan="7"><h4>Games:</h4><ul>';
+            var games = data[i]['games'];
+            var orderTotal = 0;
+            for (var j = 0; j < games.length; j++) {
+                var subtotal = games[j]['unitPrice'] * games[j]['numberOfUnits']; // subtotal = total for this particular game
+                subtotal = subtotal.toFixed(2); // converting subtotal to a string with only two digits after the decimal point
+                orderTotal += parseFloat(subtotal); // adding the subtotal to the overall total, as a floating-point number
+                html += '<li>ID: ' + games[j]['gameID'] + ', Name: ' + games[j]['gameName'] + ', Units: ' + games[j]['numberOfUnits'] 
+                        + ', Unit Price: $' + games[j]['unitPrice'] + ', <b>Subtotal: $' + subtotal + '</b></li>';
             }
             html += "</ul></td></tr>"; // closing the games row
             $(this).after(html); // appending the new html
+            $(this).find('td').last().before('<td>$' + orderTotal + '</td>'); // adding a cell to the order row, containing the overall total
         });
         
         // converting order dates to simple dates

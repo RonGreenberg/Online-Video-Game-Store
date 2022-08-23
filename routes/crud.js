@@ -7,7 +7,12 @@ var dbo = mongoDb.getDb();
 
 // exporting CRUD functions
 
-exports.read = (req, res) => {
+exports.read = (req, res, next) => {
+    // for orders collection, read needs to return a special response, so we call the next middleware
+    if (req.query.collection == "orders") {
+        return next();
+    }
+
     // getting indexes for the collection given in the URL parameter, that we'll use to sort the results
     dbo.collection(req.query.collection).indexes(function(err, indexes) {
         if (err) throw err;

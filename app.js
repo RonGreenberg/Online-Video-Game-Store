@@ -19,6 +19,7 @@ app.use(fileUpload());
 mongoDb.connectToDb(function() {
     // we must require the files that access the MongoDB connection only after it's established
     const crud = require('./routes/crud'); // crud.js
+    const orders = require('./routes/orders'); // orders.js
     const recommendedGame = require('./routes/recommendedGame'); // recommendedGame.js
     const statistics = require('./routes/statistics'); // statistics.js
     const gamesMedia = require('./routes/gamesMedia'); // gamesMedia.js
@@ -29,7 +30,7 @@ mongoDb.connectToDb(function() {
 
     // assigning CRUD functions
 
-    app.get('/read', crud.read);
+    app.get('/read', crud.read, orders.read); // using orders.read as a second middleware, because it requires special handling
 
     /* We can pass multiple functions, called middlewares, to get/post handlers. Each of these functions has access to req, res and the next middleware
     * function in the application's request-response cycle. Each function can decide when to call the next one. In our case, we need to provide support
