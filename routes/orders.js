@@ -1,3 +1,5 @@
+const ObjectId = require('mongodb').ObjectId;
+const Double = require('mongodb').Double;
 var dbo = require('../config/db').getDb();
 
 // exporting a read middleware function
@@ -78,5 +80,36 @@ exports.read = (req, res) => {
     ]).sort({ orderNumber: 1 }).toArray(function(err, result) { // sorting by orderNumber in ascending order and returning the result as an array
         if (err) throw err;
         res.send(result);
+    });
+};
+
+exports.addItem = (req, res, next) => {
+    if (req.query.action == 'delete') {
+        return next();
+    }
+
+    // assuming req.body.action='add' at this point
+    req.body.numberOfUnits = Double(req.body.numberOfUnits);
+    
+    dbo.collection("orders").updateOne({ _id: ObjectId(req.query.orderID), "games": [null] },
+    { $set: { "games": [] } }, function(err, result) {
+        if (err) throw err;
+        dbo.collection("orders").updateOne({ _id: ObjectId(req.query.orderID) }, { $push: { "games": req.body }}, function(err, result) {
+            if (err) throw err;
+            res.send("1 item added");
+        });
+    });
+};
+
+exports.deleteItem = (req, res) => {
+    dbo.collection("orders").updateOne({ _id: ObjectId(req.query.orderID), "games.gameID": req.body.gameID },
+     { $pull: { "games": { "gameID": req.body.gameID } } }, function(err, result) {
+        if (err) throw err;
+        res.send("1 item deleted");
+
+        dbo.collection("orders").updateOne({ _id: ObjectId(req.query.orderID), "games": [] },
+        { $push: { "games": null } }, function(err, result) {
+            if (err) throw err;
+        });
     });
 };

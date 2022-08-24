@@ -25,3 +25,47 @@ function addNewOrder() {
     $('input#orderNumber').prop("disabled", true).val(parseInt(lastOrderNumber) + 1); // populating the order number field with the incremented value
     populateDropdown($('select#customerID'), "customers", ['customerName']); // populating the customer dropdown
 }
+
+$(document).on('click', '.btn-delete-item', function() {
+    if (confirm("Are you sure you want to delete this item?")) {
+        var gameID = $(this).closest('tr').find('td').first().html();
+        
+        $.post('orderItem?action=delete&orderID=' + $(this).attr('data-orderid'), 'gameID=' + gameID, function(data) {
+            renderOrders();
+        });
+    }
+});
+
+$(document).on('click', '.btn-add-item', function() {
+    $('.add-item-overlay').css('display', 'block');
+    $('#addItem')[0].reset();
+    $('#addItem').attr('data-orderid', $(this).attr('data-orderid'));
+    populateDropdown($('select#gameID'), "games", ['gameName']); // populating the customer dropdown
+});
+
+$('#addItem').on('submit', function(event) {
+    event.preventDefault();
+
+    $.post('orderItem?action=add&orderID=' + $(this).attr('data-orderid'), $(this).serialize(), function(data) {
+        $('.add-item-overlay').css('display', 'none');
+        renderOrders();
+    });
+
+    $(this).removeAttr('data-orderid');
+    // $.ajax({
+    //     method: "POST",
+    //     url: 'orderItem',
+    //     data: new FormData(this).append('action', 'addItem').append('orderID', $(this).attr('data-orderid')),
+    //     processData: false, // must be set to false so that the FormData will not be processed and transformed into a query string, which would fail
+    //     contentType: false, // forcing jQuery not to add a Content-Type header to the HTTP request, which would mess up the structure of our multipart/form-data request
+    //     success: function(data) {
+    //         page.find('.popup-overlay').css('display', 'none'); // hiding the popup
+    //         renderPage(collection); // rendering the updated page
+    //     },
+    //     statusCode: { // defining functions to execute when specific status codes are received (the success function executes as usual)
+    //         422: function(response) { // 422 is currently returned in case of a duplicate "primary key"
+    //             alert(response.responseText); // displaying the error message
+    //         }
+    //     }
+    // });
+});

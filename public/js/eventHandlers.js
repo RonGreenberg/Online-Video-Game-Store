@@ -3,8 +3,8 @@ $(function() {
     selectPage(window.location.hash);
 });
 
-// event handler for clicking Add New buttons (Add New buttons in all pages should use this class)
-$('.btn-add-new').on('click', function() {
+// event handler for clicking Add New buttons, not including add item in Orders page (Add New buttons in all pages should use this class)
+$('.btn-add-new:not(.btn-add-item)').on('click', function() {
     var popup = $(this).closest('.page').find('.popup-overlay'); // finding the popup overlay from the same page where the button was clicked
     $(popup.find('button')[1]).html("Add"); // change the name of the button
     popup.css('display', 'block'); // displaying the popup
@@ -41,6 +41,7 @@ $('.btn-cancel').on('click', function() {
     popup.find('form')[0].removeAttribute("data-id"); // removing the data-id attribute in case we cancel an edit (there's no problem to remove it if it doesn't exist)
     popup.find('form')[0].removeAttribute('noValidate'); // removing the noValidate attribute, added in case we have clicked search button
     popup.find('input[class="primary-key"]').prop("disabled", false); // enabling the primary key input field that might have been disabled as a result of editing
+    $('.add-item-overlay').css('display', 'none');
 });
 
 /* Event handler for clicking an Edit button. Note that we can't use $(".btn-edit").on('click', ...), because it will bind the event only to the
@@ -66,8 +67,8 @@ $(document).on("click", ".btn-edit", function() {
     popup.css('display', 'block'); // displaying the popup
 });
 
-// event handler for clicking a Delete button
-$(document).on("click", ".btn-delete", function() {
+// event handler for clicking a Delete button (not delete item button in Orders page)
+$(document).on("click", ".btn-delete:not(.btn-delete-item)", function() {
     // asking the user with browser's built-in popup. If OK was selected, confirm() returns true
     if (confirm("Are you sure you want to delete this record?")) {
         var page = $(this).closest('.page'); // finding the page that contains this form
@@ -96,7 +97,7 @@ function displayTable(frm)
 }
 
 // event handler for submitting the form to the server (when the submit/confirm button is clicked). Could be a new record or an edited one
-$('form').on('submit', function(event) {
+$('form:not(#addItem)').on('submit', function(event) {
     event.preventDefault();
 
     var page = $(this).closest('.page');
@@ -134,7 +135,7 @@ $('form').on('submit', function(event) {
         } else { // else, we want to add a new record
             route = 'create?collection=' + collection;
         }
-        console.log(new FormData(this));
+        
         // sending an HTTP POST request to the appropriate route in the server
         $.ajax({
             method: "POST",

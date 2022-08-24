@@ -50,7 +50,7 @@ section {
 }
 
 /* class for overlay of the popup displayed when clicking Add New/Search/Edit */
-.popup-overlay, .video-overlay {
+.popup-overlay, .video-overlay, .add-item-overlay {
     display: none; /* hidden by default */
     position: fixed; /* stay in place */
     z-index: 1; /* sit on top of the rest of the page */
@@ -65,7 +65,7 @@ section {
 }
 
 /* class for the popup itself */
-.popup-content {
+.popup-content, .add-item-content {
     background-color: #fefefe;
     margin: 10% auto;
     padding: 30px;
@@ -99,4 +99,8 @@ video {
     width: 65%;
     border: 1px solid black;
     margin-left: 20px;
+}
+
+select#gameID {
+    font-family: 'Courier New', Courier, monospace;
 }

@@ -42,6 +42,8 @@ mongoDb.connectToDb(function() {
     app.post('/create', gamesMedia.upload, crud.create);
     app.post('/update', gamesMedia.upload, crud.update);
     app.post('/delete', crud.delete);
+    
+    app.post('/orderItem', orders.addItem, orders.deleteItem);
 
     // listen() returns the created HTTP server
     const server = app.listen(8080, () => {
