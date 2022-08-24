@@ -52,10 +52,17 @@ function renderPage(page) {
     }
 }
 
+// this function converts ISO date format (the way dates are stored in MongoDB) to contain only yyyy-mm-dd, which can then be easily copied to date input field
+function convertISODateElements(dates) {
+    for (var i = 0; i < dates.length; i++) {
+        dates[i].innerHTML = dates[i].innerHTML.split('T')[0];
+    }
+}
+
 function renderAbout() {
     // filling the table with the contents of the developers collection and loading the map
     if ($("#about tbody").html() == "") { // so that we load the whole About page only once
-        readAndFillTable($("#about"), "developers", false, false, ["latitude", "longitude", "image"], function(data) {
+        readAndFillTable($("#about"), "developers", false, false, ["latitude", "longitude", "image", "dateOfBirth"], function(data) {
             loadMap(data); // passing the data (which contains the coordinates and details to show in popups) to the loadMap function
         });
     }
@@ -68,19 +75,13 @@ function renderDashboard() {
     linechart();
 }
 
-function convertISODateElements(dates) {
-    for (var i = 0; i < dates.length; i++) {
-        dates[i].innerHTML = dates[i].innerHTML.split('T')[0]; // taking only the yyyy-mm-dd from the full ISO format, which can then be easily copied to date input field
-    }
-}
-
 function renderCustomers() {
     // filling the page with the contents of the customers collection
     readAndFillTable($("#customers"), "customers", undefined, undefined, undefined, function() {
         var registrationDates = $("#customers").find("table td[data-colname='registrationDate']"); // finding the relevant table cells, identified by the colname
         convertISODateElements(registrationDates);
 
-        // sending a request to get the recommended game for each customer
+        // sending a request to get the recommended game for all customers
         $.get('rg', function(recommendations, status) {
             // iterating over the table rows
             $("#customers").find("table tbody tr").each(function() {
@@ -136,27 +137,7 @@ function renderOrders() {
          * references of the original rows will be maintained.
          */
         $("#orders").find("table tbody tr").each(function(i) {
-            var table = '<table><thead><tr><th>ID</th><th>Name</th><th>Units</th><th>Unit Price</th><th>Subtotal</th><th></th></tr></thead><tbody>';
-            var html = '<tr><td colspan="7"><button class="btn-add-item">Add Item</button>' + table;
-            
-            var orderTotal = 0;
-            data[i]['games'] = data[i]['games'].filter(game => game != null && Object.keys(game).length > 0); // filtering out empty objects
-            data[i]['games'].forEach(function(game) { 
-                var subtotal = game.unitPrice * game.numberOfUnits; // subtotal = total for this particular game
-                subtotal = subtotal.toFixed(2); // converting subtotal to a string with only two digits after the decimal point
-                orderTotal += parseFloat(subtotal); // adding the subtotal to the overall total, as a floating-point number
-                game.subtotal = '$' + subtotal; // adding subtotal as a new field in each game object, formatted with dollar sign
-                game.unitPrice = '$' + game.unitPrice; // formatting the unit price as well
-            });
-            html += constructTable(data[i]['games'], false, true); // constructing table with delete buttons for the games
-
-            html += "</tbody></table></td></tr>"; // closing the games table and row
-            $(this).after(html); // appending the new html
-            $(this).find('td').last().before('<td>$' + orderTotal + '</td>'); // adding a cell to the order row, containing the overall total
-
-            var orderID = $(this).find('.btn-delete').attr('data-id');
-            $(this).next().find('.btn-delete, .btn-add-item').attr('data-orderid', orderID);
-            $(this).next().find('.btn-delete').addClass('btn-delete-item');
+            createOrderItemsTable($(this), data[i]['games']); // for each order, creating an expandable table containing its items
         });
         
         // converting order dates to simple dates
@@ -180,6 +161,40 @@ function renderOrders() {
             });
         });
     });
+}
+
+/* This function gets an row from the orders table (retrieved by jQuery), and an array of item objects. It appends a table row after the main row,
+ * containing another table with the items.
+ */
+function createOrderItemsTable(orderRow, items) {
+    var table = '<table><thead><tr><th>ID</th><th>Name</th><th>Units</th><th>Unit Price</th><th>Subtotal</th><th></th></tr></thead><tbody>'; // table headers
+    var html = '<tr><td colspan="7"><button class="btn-add-item">Add Item</button>' + table; // including an Add Item button above the table
+    
+    var orderTotal = 0;
+    items = items.filter(item => item != null && Object.keys(item).length > 0); // filtering out null/empty objects (in case of order with no items)
+    items.forEach(function(item) { 
+        var subtotal = item.unitPrice * item.numberOfUnits; // subtotal = total for this particular item
+        subtotal = subtotal.toFixed(2); // converting subtotal to a string with only two digits after the decimal point
+        orderTotal += parseFloat(subtotal); // adding the subtotal to the overall total, as a floating-point number
+        item.subtotal = '$' + subtotal; // adding subtotal as a new field in each item object, formatted with dollar sign
+        item.unitPrice = '$' + item.unitPrice; // formatting the unit price as well
+    });
+    html += constructTable(items, false, true); // constructing table with delete buttons for the items
+
+    html += "</tbody></table></td></tr>"; // closing the items table and row
+    orderRow.after(html); // appending the new html
+    
+    if (orderRow.find('.order-total').length == 0) {
+        // adding a cell to the order row containing the overall total, giving it a class so we can find it and update its value next time
+        orderRow.find('td').last().before('<td class="order-total">$' + orderTotal + '</td>');
+    } else {
+        // in case we refresh a specific order after adding/deleting item, the order total cell already exists, so we just update its value
+        orderRow.find('.order-total').html('$' + orderTotal);
+    }
+
+    var orderID = orderRow.find('.btn-delete').attr('data-id');
+    orderRow.next().find('.btn-delete, .btn-add-item').attr('data-orderid', orderID); // storing the order id as a data attribute of both the add and delete buttons (so we can send it to the server when needed)
+    orderRow.next().find('.btn-delete').addClass('btn-delete-item'); // adding the btn-delete-item class to the delete buttons, to apply a specific logic for them in ordersEvents.js
 }
 
 /* This function receives a page element, collection name, fields required for constructTable, and an optional callback function to be called

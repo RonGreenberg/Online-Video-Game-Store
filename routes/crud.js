@@ -39,8 +39,11 @@ exports.create = (req, res) => {
      */
     const { publishOnTwitter, ...body } = req.body;
 
+    /* In the case of creating a new order, we have to append an empty games array or otherwise the order will be filtered by orders.read, thus not
+     * appearing in the page at all. Also, MongoDB doesn't accept an empty array without null.
+     */
     if (req.query.collection == "orders") {
-        body.games = [null]; // appending an empty games array, otherwise the order will not appear in the Orders page (Note: MongoDB doesn't accept an empty array without null)
+        body.games = [null];
     }
 
     dbo.collection(req.query.collection).insertOne(body, function(err, result) {

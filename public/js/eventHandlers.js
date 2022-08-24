@@ -10,8 +10,9 @@ $('.btn-add-new:not(.btn-add-item)').on('click', function() {
     popup.css('display', 'block'); // displaying the popup
     popup.find('form')[0].reset(); // searching the form among the popup element's children, and clearing its input boxes
     popup.find('form input[type="date"]').val(new Date().toISOString().split('T')[0]); // using today's date as default for input fields (must be formatted as yyyy-mm-dd when setting)
+    // if we are in the Orders page, we have some additional things to do
     if ($(this).closest('.page').attr('id') == "orders") {
-        addNewOrder();
+        addNewOrderBtn();
     }
 });
 
@@ -27,6 +28,11 @@ $('.btn-search').on('click', function() {
      * so that it doesn't check for required inputs.
      */
     popup.find('form').eq(0).prop('noValidate', true); // just like popup.find('form')[0], only that it remains a jQuery object
+
+    // if we are in the Orders page, we need to also populate customers dropdown for searching
+    if ($(this).closest('.page').attr('id') == "orders") {
+        populateDropdown($('select#customerID'), "customers", ['customerName']);
+    }
 });
 
 $('.btn-clear-search').on('click', function() {
@@ -82,13 +88,14 @@ $(document).on("click", ".btn-delete:not(.btn-delete-item)", function() {
     }
 });
 
-function displayTable(frm)
-{
+// this function takes care of hiding/showing table rows before a Search or as a result of Clear Search
+function displayTable(frm) {
     var tbody = $(frm).closest('.page').find('table tbody')[0]; // gets the table body
     var rows = $(tbody).children('tr'); // direct children only (because in orders form we have hidden tables and rows...)
     for(var i = 0; i < rows.length; i++) // run on the rows
     {
         var row = rows[i];
+        $(row).find('.table-expandable-arrow').removeClass('up'); // resetting arrow in case of Orders (expandable rows)
         if(!($(row).children('td')[0].hasAttribute("colspan"))) // depends on the fact that in Orders table, rows containing game details (which should be hidden) use the colspan attribute
             row.style.display="table-row"; // displaying the row
         else
@@ -110,10 +117,11 @@ $('form:not(#addItem)').on('submit', function(event) {
 
     var textFields = $(this).find('input, select').filter(':visible'); // get all visible input/dropdown elements
 
-    displayTable($(this)); // displaying the entire table by default. in case of a blank search, no rows will be hidden
+    // displaying the entire table by default. in case of a blank search, no rows will be hidden. in case of orders, it hides the rows with the items.
+    displayTable($(this));
 
     if ($(this).find('button')[1].innerHTML == "Search") { // check if this is a search popup                 
-        var rows = $(this).closest('.page').find('table tbody tr'); // gets the rows
+        var rows = $(this).closest('.page').find('> table > tbody > tr:visible'); // gets the rows of immediate table child (so that it doesn't include nested tables in Orders page)
         for (var i = 0; i < rows.length; i++) {
             var cells = rows.eq(i).find('td[data-colname]'); // selecting only cells that have a data-colname attribute (not image/video for example)
             for (var j = 0; j < cells.length; j++) { // run on the columns

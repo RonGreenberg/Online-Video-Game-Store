@@ -4,7 +4,7 @@ const socket = require('socket.io');
 const mongoDb = require('./config/db'); // db.js
 const os = require('os'); // provides operating system-related utility methods, used to send info about the server to clients
 const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+const fileUpload = require('express-fileupload'); // module used for uploading game image/trailer
 
 // serving static files
 app.use(express.static(__dirname));
@@ -23,13 +23,18 @@ mongoDb.connectToDb(function() {
     const recommendedGame = require('./routes/recommendedGame'); // recommendedGame.js
     const statistics = require('./routes/statistics'); // statistics.js
     const gamesMedia = require('./routes/gamesMedia'); // gamesMedia.js
+    const getNews = require('./routes/getNews'); // getNews.js
+
+    // assigning exported function to route
+    app.get('/getNews', getNews.getNews);
 
     // assigning function exported from recommendedGame.js, statistics.js to designated routes
     app.get('/rg', recommendedGame.rg);
-    app.get('/statistics', statistics.statistics);
+    app.get('/statistics', statistics.statistics); // SYNTAX: /statistics?data=gamesByPlatform
 
     // assigning CRUD functions
 
+    // SYNTAX: /read?collection=... (&orderID=... in case we want to read a single order)
     app.get('/read', crud.read, orders.read); // using orders.read as a second middleware, because it requires special handling
 
     /* We can pass multiple functions, called middlewares, to get/post handlers. Each of these functions has access to req, res and the next middleware
@@ -39,11 +44,12 @@ mongoDb.connectToDb(function() {
     * crud.create as usual. Otherwise, we store the files on designated folders on the server, add their paths to the request body and then proceed to store
     * the record in the database.
     */
-    app.post('/create', gamesMedia.upload, crud.create);
-    app.post('/update', gamesMedia.upload, crud.update);
-    app.post('/delete', crud.delete);
+    app.post('/create', gamesMedia.upload, crud.create); // SYNTAX: /create?collection=...
+    app.post('/update', gamesMedia.upload, crud.update); // SYNTAX: /update?collection=...
+    app.post('/delete', crud.delete); // SYNTAX: /delete?collection=...
     
-    app.post('/orderItem', orders.addItem, orders.deleteItem);
+    // a special route for handling order items addition/deletion, can handle both cases using two middlewares
+    app.post('/orderItem', orders.addItem, orders.deleteItem); // SYNTAX: /orderItem?action=[add/delete]&orderID=...
 
     // listen() returns the created HTTP server
     const server = app.listen(8080, () => {
