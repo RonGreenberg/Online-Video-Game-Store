@@ -1,5 +1,6 @@
 const mongoDb = require('../config/db'); // db.js
 const ObjectId = require('mongodb').ObjectId; // we must use ObjectId to filter by _id
+const Int32 = require('mongodb').Int32; // mongodb native integer type
 const twitterClient = require("../config/twitterClient.js");
 
 // getting the db connection object (possible since this file is required and loaded only when the connection is ready)
@@ -43,6 +44,7 @@ exports.create = (req, res) => {
      * appearing in the page at all. Also, MongoDB doesn't accept an empty array without null.
      */
     if (req.query.collection == "orders") {
+        body.orderNumber = Int32(body.orderNumber); // we have to save order number as integer so that it doesn't sort lexicographically
         body.games = [null];
     }
 
